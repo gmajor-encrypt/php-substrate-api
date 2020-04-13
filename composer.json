@@ -1,0 +1,24 @@
+{
+  "name": "gmajor/php-substrate-api",
+  "description": "PHP Substrate RPC Api",
+  "keywords": [
+    "substrate",
+    "http",
+    "rpc"
+  ],
+  "type": "library",
+  "license": "GUN",
+  "minimum-stability": "dev",
+  "require": {
+    "php": "^7.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.7",
+    "squizlabs/php_codesniffer": "^2.9.2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Codec\\": "src/Rpc/"
+    }
+  }
+}
