@@ -28,7 +28,7 @@ class WSClient extends Client
      * @throws BadOpcodeException
      * @throws ConnectionException
      */
-    function subscribe (string $method, array $params = [])
+    function subscribe (string $method, array $params = []): string
     {
         $client = new WS(self::$WS_ENDPOINT);
         $client->send(json_encode(json2::build($method, $params)));

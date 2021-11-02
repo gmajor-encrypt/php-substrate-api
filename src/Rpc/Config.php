@@ -4,29 +4,30 @@ namespace Rpc;
 
 class Config
 {
-    public static $config = [
-        "http_endpoint" => "http://127.0.0.1:9933",
-        "ws_endpoint" => "ws://127.0.0.1:9944",
+    /**
+     * @var array|string[]
+     */
+    public static array $config = [
+        "http_endpoint" => "",
+        "ws_endpoint" => "",
     ];
 
 
-    /**
-     * setHttpEndPoint
-     * @param string $endpoint
-     */
-    public static function setHttpEndPoint(string $endpoint)
+    public static function setEndPoint(string $endpoint)
     {
-        self::$config["http_endpoint"] = $endpoint;
-    }
-
-
-    /**
-     * setWSEndPoint
-     * @param string $endpoint
-     */
-    public static function setWSEndPoint(string $endpoint)
-    {
-        self::$config["ws_endpoint"] = $endpoint;
+        $parse = parse_url($endpoint);
+        if(!array_key_exists("scheme",$parse)){
+            throw new \InvalidArgumentException("endpoint only support http or ws");
+        }
+        if($parse["scheme"]=="http" || $parse["scheme"]=="https"){
+            self::$config["http_endpoint"] = $endpoint;
+            return;
+        }
+        if($parse["scheme"]=="ws" || $parse["scheme"]=="wss"){
+            self::$config["ws_endpoint"] = $endpoint;
+            return;
+        }
+        throw new \InvalidArgumentException("endpoint only support http or ws");
     }
 
 }

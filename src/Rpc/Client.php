@@ -36,4 +36,9 @@ class Client implements IClient
         ini_set("date.timezone", "UTC");
         return date("Y-m-d\TH:i:s") . substr((string)microtime(), 1, 4) . 'Z';
     }
+
+    public function subscribe(string $method, array $params = []): mixed
+    {
+        // TODO: Implement subscribe() method.
+    }
 }
