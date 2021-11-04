@@ -2,7 +2,6 @@
 
 namespace Rpc;
 
-
 class Util
 {
 
@@ -13,7 +12,7 @@ class Util
      * @param $params
      * @return mixed
      */
-    public static function requestWithPayload ($endPoint, $params): mixed
+    public static function requestWithPayload($endPoint, $params): mixed
     {
         $body = $params ? json_encode($params, JSON_UNESCAPED_SLASHES) : '';
         $ch = curl_init();
@@ -23,7 +22,7 @@ class Util
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
         curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, TRUE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLINFO_HEADER_OUT, true);
         curl_setopt($ch, CURLOPT_HEADER, true);

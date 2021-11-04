@@ -2,7 +2,7 @@
 
 namespace Rpc;
 
-use Rpc\Substrate\json2;
+use Rpc\Substrate\Json2;
 
 class HttpClient extends Client
 {
@@ -11,7 +11,7 @@ class HttpClient extends Client
      * Http constructor.
      *
      */
-    public function __construct ()
+    public function __construct()
     {
         parent::__construct();
     }
@@ -23,8 +23,8 @@ class HttpClient extends Client
      * @param array $params
      * @return mixed
      */
-    function subscribe (string $method, array $params = []): mixed
+    public function read(string $method, array $params = []): mixed
     {
-        return Util::requestWithPayload(self::$HTTP_ENDPOINT, json2::build($method, $params));
+        return Util::requestWithPayload(self::$HTTP_ENDPOINT, Json2::build($method, $params));
     }
 }

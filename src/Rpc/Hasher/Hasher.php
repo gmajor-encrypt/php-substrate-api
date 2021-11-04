@@ -1,6 +1,6 @@
 <?php
 
-namespace Hasher;
+namespace Rpc\Hasher;
 
 class Hasher
 {

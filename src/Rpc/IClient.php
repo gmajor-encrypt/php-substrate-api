@@ -1,13 +1,16 @@
 <?php
+
 namespace Rpc;
 
-interface IClient{
+interface IClient
+{
     /**
-     * subscribe interface
+     * read interface
+     * Read/subscribe HTTP/Websocket to RPC endpoints
      *
      * @param string $method
      * @param array $params
      * @return mixed
      */
-    public function subscribe(string $method, array $params = []):mixed;
+    public function read(string $method, array $params = []): mixed;
 }

@@ -4,7 +4,7 @@ namespace Rpc;
 
 use WebSocket\BadOpcodeException;
 use WebSocket\Client as WS;
-use Rpc\Substrate\json2;
+use Rpc\Substrate\Json2;
 use WebSocket\ConnectionException;
 
 class WSClient extends Client
@@ -14,7 +14,7 @@ class WSClient extends Client
      * Websocket constructor.
      *
      */
-    public function __construct ()
+    public function __construct()
     {
         parent::__construct();
     }
@@ -28,11 +28,10 @@ class WSClient extends Client
      * @throws BadOpcodeException
      * @throws ConnectionException
      */
-    function subscribe (string $method, array $params = []): string
+    public function read(string $method, array $params = []): string
     {
         $client = new WS(self::$WS_ENDPOINT);
-        $client->send(json_encode(json2::build($method, $params)));
+        $client->send(json_encode(Json2::build($method, $params)));
         return $client->receive();
     }
-
 }

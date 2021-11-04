@@ -7,14 +7,16 @@ class Client implements IClient
     /**
      * @var string
      */
-    static string $HTTP_ENDPOINT = "";
+    public static string $HTTP_ENDPOINT = "";
 
     /**
      * @var string
      */
-    static string $WS_ENDPOINT = "";
+    public static string $WS_ENDPOINT = "";
 
-    function __construct ()
+
+
+    public function __construct()
     {
         self::setParams(config::$config);
     }
@@ -22,22 +24,24 @@ class Client implements IClient
     /**
      * @param $configs
      */
-    public static function setParams ($configs)
+    public static function setParams($configs)
     {
         self::$HTTP_ENDPOINT = $configs["http_endpoint"];
         self::$WS_ENDPOINT = $configs["ws_endpoint"];
     }
 
     /**
+     * current timestamp
+     *
      * @return string
      */
-    public static function getTimestamp (): string
+    public static function getTimestamp(): string
     {
         ini_set("date.timezone", "UTC");
         return date("Y-m-d\TH:i:s") . substr((string)microtime(), 1, 4) . 'Z';
     }
 
-    public function subscribe(string $method, array $params = []): mixed
+    public function read(string $method, array $params = []): mixed
     {
         // TODO: Implement subscribe() method.
     }

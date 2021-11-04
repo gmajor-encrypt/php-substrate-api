@@ -2,6 +2,8 @@
 
 namespace Rpc\Substrate;
 
+use Rpc\IClient;
+
 class Method
 {
     /** account start **/
@@ -36,7 +38,10 @@ class Method
     /** author end **/
 
     /** babe start **/
-    // Returns data about which slots (primary or secondary) can be claimed in the current epoch with the keys in the keystore
+
+    // Returns data about which slots (primary or secondary)
+    // can be claimed in the current epoch with the keys in the keystore
+
     const BABE_EPOCH_AUTHORSHIP = 'babe_epochAuthorship';
     /** babe end **/
 
@@ -162,4 +167,41 @@ class Method
     const SYSTEM_VERSION = 'system_version';
 
     /** system end */
+
+    /**
+     * @var IClient
+     */
+    public IClient $client;
+
+    /**
+     * pallet name;
+     *
+     * @var string
+     */
+    public string $pallet;
+
+
+    /**
+     *
+     * @param IClient $client
+     * @param string $pallet
+     */
+    public function __construct(IClient $client, string $pallet)
+    {
+        $this->client = $client;
+        $this->pallet = $pallet;
+    }
+
+
+    /**
+     * @param string $method
+     * @param array $attributes
+     *
+     * @return void
+     */
+    public function __call(string $method, array $attributes)
+    {
+        var_dump(strtolower(sprintf("%s_%s", $this->pallet, $method)));
+        var_dump($this->client->read(strtolower(sprintf("%s_%s", $this->pallet, $method)), $attributes));
+    }
 }

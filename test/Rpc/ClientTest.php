@@ -11,24 +11,24 @@ use PHPUnit\Framework\TestCase;
 
 final class ClientTest extends TestCase
 {
-    public function testSubscribe ()
+    public function testSubscribe()
     {
         Config::setEndPoint("wss://kusama-rpc.polkadot.io/");
         $wsClient = new WSClient();
-        $wsClient->subscribe(Method::SYSTEM_HEALTH);
+        $wsClient->read(Method::SYSTEM_HEALTH);
     }
 
-    public function testHTTPSubscribe ()
+    public function testHTTPSubscribe()
     {
         Config::setEndPoint("https://kusama-rpc.polkadot.io/");
         $wsClient = new HttpClient();
-        $wsClient->subscribe(Method::SYSTEM_HEALTH);
+        $wsClient->read(Method::SYSTEM_HEALTH);
     }
 
-    public function testSubstrateRpc ()
+    public function testSubstrateRpc()
     {
         Config::setEndPoint("https://kusama-rpc.polkadot.io/");
         $wsClient = new SubstrateRpc();
-        $wsClient->client->subscribe(Method::SYSTEM_HEALTH);
+        $wsClient->rpc->System->Health();
     }
 }

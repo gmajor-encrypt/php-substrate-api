@@ -2,7 +2,7 @@
 
 namespace Rpc\Substrate;
 
-class json2
+class Json2
 {
     /**
      * build substrate call
@@ -11,7 +11,7 @@ class json2
      * @param array $params
      * @return array
      */
-    public static function build (string $method, array $params = [])
+    public static function build(string $method, array $params = []):array
     {
         return [
             "id" => rand(0, 10000),
@@ -20,6 +20,4 @@ class json2
             "params" => $params
         ];
     }
-
-
 }

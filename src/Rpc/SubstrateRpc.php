@@ -1,25 +1,18 @@
 <?php
+
 namespace Rpc;
 
-class SubstrateRpc{
+class SubstrateRpc
+{
 
     /**
-     * @var IClient
+     * @var Rpc
      */
-    public IClient $client;
+    public Rpc $rpc;
 
 
-    function  __construct ()
+    public function __construct()
     {
-        $conf = config::$config;
-        if(!empty($conf["ws_endpoint"])){
-            $this->client = new WSClient();
-            return;
-        }elseif (!empty($conf["http_endpoint"])){
-            $this->client = new HttpClient();
-            return;
-        }
-        throw new \InvalidArgumentException("please provider http/ws endpoint");
+        $this->rpc = new Rpc();
     }
-
 }
