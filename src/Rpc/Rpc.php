@@ -8,32 +8,38 @@ class Rpc
 {
 
     /**
-     * @var IClient
+     * @var IClient $client
      */
     public IClient $client;
 
+    /**
+     * @var array $methods
+     */
+    public array $methods;
+
+
     public function __construct()
     {
-
         $conf = config::$config;
         if (!empty($conf["ws_endpoint"])) {
             $this->client = new WSClient();
-            return;
         } elseif (!empty($conf["http_endpoint"])) {
             $this->client = new HttpClient();
-            return;
         }
-        throw new \InvalidArgumentException("please provider http/ws endpoint");
+        if(!isset($this->client)){
+            throw new \InvalidArgumentException("please provider http/ws endpoint");
+        }
+        $m = new Method($this->client,"rpc");
+        $this->methods = $m->methods()["result"]["methods"];
     }
 
 
     /**
-     * @param string $method
+     * @param string $pallet
      * @return Method
      */
-    public function __get(string $method): Method
+    public function __get(string $pallet): Method
     {
-
-        return new Method($this->client, $method);
+        return new Method($this->client, $pallet);
     }
 }

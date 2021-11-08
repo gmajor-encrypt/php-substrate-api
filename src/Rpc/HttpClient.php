@@ -17,7 +17,7 @@ class HttpClient extends Client
     }
 
     /**
-     * subscribe
+     * subscribe http request
      *
      * @param string $method
      * @param array $params

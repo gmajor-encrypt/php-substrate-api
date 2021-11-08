@@ -6,7 +6,7 @@ class Util
 {
 
     /**
-     * HTTP REQUEST
+     * HTTP REQUEST POST json payload
      *
      * @param $endPoint
      * @param $params
