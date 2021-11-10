@@ -2,32 +2,22 @@
 
 namespace Rpc\Test;
 
-use Rpc\Config;
-use Rpc\HttpClient;
 use Rpc\WSClient;
 use Rpc\SubstrateRpc;
 use PHPUnit\Framework\TestCase;
 
 final class ClientTest extends TestCase
 {
-    public function testSubscribe()
+    public function testSubscribe ()
     {
-        Config::setEndPoint("wss://kusama-rpc.polkadot.io/");
-        $wsClient = new WSClient();
+        $wsClient = new WSClient("wss://kusama-rpc.polkadot.io/");
         $this->assertNotEmpty($wsClient->read("system_health"));
+        $wsClient->close();
     }
 
-    public function testHTTPSubscribe()
+    public function testSubstrateRpc ()
     {
-        Config::setEndPoint("https://kusama-rpc.polkadot.io/");
-        $wsClient = new HttpClient();
-        $this->assertNotEmpty($wsClient->read("system_health"));
-    }
-
-    public function testSubstrateRpc()
-    {
-        Config::setEndPoint("https://kusama-rpc.polkadot.io/");
-        $wsClient = new SubstrateRpc();
+        $wsClient = new SubstrateRpc("https://kusama-rpc.polkadot.io/");
         $this->expectException(\InvalidArgumentException::class);
         $wsClient->rpc->parent->hash();
     }

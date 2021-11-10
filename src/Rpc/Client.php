@@ -15,19 +15,22 @@ class Client implements IClient
     public static string $WS_ENDPOINT = "";
 
 
-
-    public function __construct()
+    public function __construct (string $endpoint)
     {
-        self::setParams(config::$config);
-    }
 
-    /**
-     * @param $configs
-     */
-    public static function setParams($configs)
-    {
-        self::$HTTP_ENDPOINT = $configs["http_endpoint"];
-        self::$WS_ENDPOINT = $configs["ws_endpoint"];
+        $parse = parse_url($endpoint);
+        if (!array_key_exists("scheme", $parse)) {
+            throw new \InvalidArgumentException("endpoint only support http or ws");
+        }
+        if ($parse["scheme"] == "http" || $parse["scheme"] == "https") {
+            self::$HTTP_ENDPOINT = $endpoint;
+            return;
+        }
+        if ($parse["scheme"] == "ws" || $parse["scheme"] == "wss") {
+            self::$WS_ENDPOINT = $endpoint;
+            return;
+        }
+        throw new \InvalidArgumentException("endpoint only support http or ws");
     }
 
     /**
@@ -35,14 +38,18 @@ class Client implements IClient
      *
      * @return string
      */
-    public static function getTimestamp(): string
+    public static function getTimestamp (): string
     {
         ini_set("date.timezone", "UTC");
         return date("Y-m-d\TH:i:s") . substr((string)microtime(), 1, 4) . 'Z';
     }
 
-    public function read(string $method, array $params = []): mixed
+    public function read (string $method, array $params = []): mixed
     {
         // TODO: Implement subscribe() method.
+    }
+
+    public function close ()
+    {
     }
 }

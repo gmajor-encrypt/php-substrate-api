@@ -11,8 +11,13 @@ class SubstrateRpc
     public Rpc $rpc;
 
 
-    public function __construct()
+    /**
+     * construct
+     *
+     * @param string $endpoint
+     */
+    public function __construct(string $endpoint)
     {
-        $this->rpc = new Rpc();
+        $this->rpc = new Rpc($endpoint);
     }
 }

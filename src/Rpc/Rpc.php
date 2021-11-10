@@ -18,18 +18,22 @@ class Rpc
     public array $methods;
 
 
-    public function __construct()
+    /**
+     * @param string $endpoint
+     */
+    public function __construct (string $endpoint)
     {
-        $conf = config::$config;
-        if (!empty($conf["ws_endpoint"])) {
-            $this->client = new WSClient();
-        } elseif (!empty($conf["http_endpoint"])) {
-            $this->client = new HttpClient();
+        $parse = parse_url($endpoint);
+
+        if ($parse["scheme"] == "ws" || $parse["scheme"] == "wss") {
+            $this->client = new WSClient($endpoint);
+        } elseif ($parse["scheme"] == "http" || $parse["scheme"] == "https") {
+            $this->client = new HttpClient($endpoint);
         }
-        if(!isset($this->client)){
+        if (!isset($this->client)) {
             throw new \InvalidArgumentException("please provider http/ws endpoint");
         }
-        $m = new Method($this->client,"rpc");
+        $m = new Method($this->client, "rpc");
         $this->methods = $m->methods()["result"]["methods"];
     }
 
@@ -38,7 +42,7 @@ class Rpc
      * @param string $pallet
      * @return Method
      */
-    public function __get(string $pallet): Method
+    public function __get (string $pallet): Method
     {
         return new Method($this->client, $pallet);
     }

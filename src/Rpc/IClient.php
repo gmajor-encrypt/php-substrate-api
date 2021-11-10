@@ -13,4 +13,10 @@ interface IClient
      * @return mixed
      */
     public function read(string $method, array $params = []): mixed;
+
+
+    /**
+     * close interface
+     */
+    public function close();
 }

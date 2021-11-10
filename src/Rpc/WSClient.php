@@ -10,13 +10,16 @@ use WebSocket\ConnectionException;
 class WSClient extends Client
 {
 
+    public WS $client;
+
     /**
      * Websocket constructor.
      *
      */
-    public function __construct()
+    public function __construct (string $endpoint)
     {
-        parent::__construct();
+        $this->client = new WS($endpoint);
+        parent::__construct($endpoint);
     }
 
     /**
@@ -25,13 +28,19 @@ class WSClient extends Client
      * @param string $method
      * @param array $params
      * @return string
-     * @throws BadOpcodeException
-     * @throws ConnectionException
+     * @throws BadOpcodeException|ConnectionException
      */
-    public function read(string $method, array $params = []): string
+    public function read (string $method, array $params = []): string
     {
-        $client = new WS(self::$WS_ENDPOINT);
-        $client->send(json_encode(Json2::build($method, $params)));
-        return $client->receive();
+        $this->client->send(json_encode(Json2::build($method, $params)));
+        return $this->client->receive();
+    }
+
+    /**
+     * close websocket connect
+     */
+    public function close ()
+    {
+        $this->client->close();
     }
 }

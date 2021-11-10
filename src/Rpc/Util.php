@@ -12,7 +12,7 @@ class Util
      * @param $params
      * @return mixed
      */
-    public static function requestWithPayload($endPoint, $params): mixed
+    public static function requestWithPayload($endPoint, $params): array
     {
         $body = $params ? json_encode($params, JSON_UNESCAPED_SLASHES) : '';
         $ch = curl_init();
