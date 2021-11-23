@@ -12,7 +12,7 @@ class Util
      * @param $params
      * @return mixed
      */
-    public static function requestWithPayload($endPoint, $params): array
+    public static function requestWithPayload ($endPoint, $params): array
     {
         $body = $params ? json_encode($params, JSON_UNESCAPED_SLASHES) : '';
         $ch = curl_init();
@@ -34,4 +34,24 @@ class Util
         $body = substr($return, $headerSize, $bodySize);
         return json_decode($body, true);
     }
+
+    /**
+     * @param $hexString string
+     * @return string
+     */
+    public static function trimHex (string $hexString): string
+    {
+        return preg_replace('/0x/', '', $hexString);
+    }
+
+    /**
+     * @param $hexString string
+     * @return string
+     */
+    public static function addHex (string $hexString): string
+    {
+        return str_starts_with($hexString, '0x') ? $hexString : '0x' . $hexString;
+    }
+
+
 }

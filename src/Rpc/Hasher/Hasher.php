@@ -3,6 +3,8 @@
 namespace Rpc\Hasher;
 
 use Crypto\sr25519;
+use Rpc\Util;
+use SodiumException;
 
 class Hasher
 {
@@ -22,27 +24,28 @@ class Hasher
      * @param string $hasher
      * @param string $hex
      * @return string
-     * @throws \SodiumException
+     * @throws SodiumException
      */
     public function ByHasherName (string $hasher, string $hex): string
     {
         switch ($hasher) {
             case "Blake2_128":
-                return sprintf("0x%s", sodium_bin2hex(sodium_crypto_generichash(hex2bin($hex), '', 16)));
+                return sprintf("%s", sodium_bin2hex(sodium_crypto_generichash(hex2bin(Util::trimHex($hex)), '', 16)));
             case "Blake2_256":
-                return sprintf("0x%s", sodium_bin2hex(sodium_crypto_generichash(hex2bin($hex))));
+                return sprintf("%s", sodium_bin2hex(sodium_crypto_generichash(hex2bin(Util::trimHex($hex)))));
             case "Twox128":
                 // https://php.watch/versions/8.1/xxHash
+                return sprintf("%s", $this->TwoxHash($hex, 128));
             case "Twox256":
-
+                return sprintf("%s", $this->TwoxHash($hex, 256));
             case "Twox64Concat":
-
+                return sprintf("%s%s", $this->XXHash64(0, $hex), Util::trimHex($hex));
             case "Identity":
-
+                return $hex;
             case "Blake2_128Concat":
-
+                return sprintf("%s%s", sodium_bin2hex(sodium_crypto_generichash(hex2bin($hex), '', 16)), Util::trimHex($hex));
             default:
-                return "";
+                throw new \InvalidArgumentException(sprintf("invalid hasher %s", $hasher));
         }
     }
 
@@ -51,8 +54,27 @@ class Hasher
      * @param string $data
      * @return string
      */
-    public function checkSum (int $seed, string $data): string
+    public function XXHash64 (int $seed, string $data): string
     {
         return $this->sr->XXHash64CheckSum($seed, $data);
+    }
+
+
+    /**
+     * Twox hasher
+     *
+     * @param string $data
+     * @param int $bitLength
+     * @return string
+     *
+     */
+    public function TwoxHash (string $data, int $bitLength): string
+    {
+        $iterations = ceil($bitLength / 64);
+        $hash = "";
+        for ($seed = 0; $seed < $iterations; $seed++) {
+            $hash .= $this->sr->XXHash64CheckSum($seed, $data);
+        }
+        return $hash;
     }
 }
