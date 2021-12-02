@@ -27,11 +27,13 @@ class StorageKey
 
         $storageItem = array();
 
-        foreach ($metadata["modules"] as $v) {
+        foreach ($metadata["pallets"] as $v) {
             if (strcasecmp($v["name"], $moduleName)) {
-                foreach ($v["storage"]["items"] as $item) {
-                    if (strcasecmp($item["prefix"], $storageName)) {
-                        $storageItem = $item;
+                if (!is_null($v["storage"])) {
+                    foreach ($v["storage"]["items"] as $item) {
+                        if (strcasecmp($item["name"], $storageName)) {
+                            $storageItem = $item;
+                        }
                     }
                 }
             }
@@ -70,10 +72,10 @@ class StorageKey
         }
 
         $hash = new Hasher();
-        $encodeKey = $hash->ByHasherName($moduleName, "Twox128") . $hash->ByHasherName($storageName, "Twox128");
+        $encodeKey = $hash->ByHasherName("Twox128", $moduleName) . $hash->ByHasherName("Twox128", $storageName);
 
         foreach ($args as $index => $arg) {
-            $encodeKey = $encodeKey . $hash->ByHasherName($arg, $hashers[$index]);
+            $encodeKey = $encodeKey . $hash->ByHasherName($hashers[$index], $arg);
         }
 
         return new StorageKey($valueType, $encodeKey);
