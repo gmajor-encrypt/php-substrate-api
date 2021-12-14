@@ -2,6 +2,7 @@
 
 namespace Rpc\Substrate;
 
+use http\Exception\InvalidArgumentException;
 use Rpc\IClient;
 
 class Method
@@ -22,6 +23,7 @@ class Method
 
     /**
      * support rpc methods
+     *
      * @var array
      */
     public array $support;
@@ -32,14 +34,15 @@ class Method
      * @param string $pallet
      * @param array $support
      */
-    public function __construct(IClient $client, string $pallet,array $support = array())
+    public function __construct (IClient $client, string $pallet, array $support = array())
     {
         $this->client = $client;
         $this->pallet = $pallet;
         $this->support = $support;
     }
 
-    public function methods(){
+    public function methods ()
+    {
         return $this->client->read("rpc_methods");
     }
 
@@ -48,13 +51,15 @@ class Method
      * @param array $attributes
      *
      * @return void
+     * @throws \InvalidArgumentException
      */
-    public function __call(string $call, array $attributes)
+    public function __call (string $call, array $attributes)
     {
-        $method = strtolower(sprintf("%s_%s", $this->pallet, $call));
-        if(!in_array($method,$this->support)){
-            throw new \InvalidArgumentException(sprintf("RPC %s not support",$method));
+        $method = sprintf("%s_%s", $this->pallet, $call);
+        $res = $this->client->read($method);
+        if (array_key_exists("error", $res)) {
+            throw new \InvalidArgumentException(sprintf("RPC %s not support", $method));
         }
-        var_dump($this->client->read($method), $attributes);
+        return $res;
     }
 }

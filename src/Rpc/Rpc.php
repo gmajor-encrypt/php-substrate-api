@@ -34,7 +34,8 @@ class Rpc
             throw new \InvalidArgumentException("please provider http/ws endpoint");
         }
         $m = new Method($this->client, "rpc");
-        $this->methods = $m->methods()["result"]["methods"];
+        $methods = $m->methods();
+        $this->methods = $methods["result"]["methods"];
     }
 
 

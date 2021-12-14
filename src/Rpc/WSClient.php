@@ -27,13 +27,13 @@ class WSClient extends Client
      *
      * @param string $method
      * @param array $params
-     * @return string
+     * @return array
      * @throws BadOpcodeException|ConnectionException
      */
-    public function read (string $method, array $params = []): string
+    public function read (string $method, array $params = []): array
     {
         $this->client->send(json_encode(Json2::build($method, $params)));
-        return $this->client->receive();
+        return json_decode($this->client->receive(),true);
     }
 
     /**

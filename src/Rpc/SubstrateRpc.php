@@ -16,8 +16,18 @@ class SubstrateRpc
      *
      * @param string $endpoint
      */
-    public function __construct(string $endpoint)
+    public function __construct (string $endpoint)
     {
         $this->rpc = new Rpc($endpoint);
+    }
+
+    /**
+     *  client close connection
+     *
+     * @return void
+     */
+    public function close ()
+    {
+        $this->rpc->client->close();
     }
 }

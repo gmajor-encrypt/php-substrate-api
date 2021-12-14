@@ -28,10 +28,10 @@ class StorageKey
         $storageItem = array();
 
         foreach ($metadata["pallets"] as $v) {
-            if (strcasecmp($v["name"], $moduleName)) {
+            if (!strcasecmp($v["name"], $moduleName)) {
                 if (!is_null($v["storage"])) {
                     foreach ($v["storage"]["items"] as $item) {
-                        if (strcasecmp($item["name"], $storageName)) {
+                        if (!strcasecmp($item["name"], $storageName)) {
                             $storageItem = $item;
                         }
                     }
@@ -44,11 +44,10 @@ class StorageKey
 
         $valueType = "";
         $hashers = [];
-
         switch ($storageItem["type"]["origin"]) {
             case "MapType":
                 $valueType = $storageItem["type"]["map_type"]["value"];
-                array_push($hashers, $storageItem["type"]["map_type"]["hasher"]);
+                $hashers[] = $storageItem["type"]["map_type"]["hasher"];
                 break;
             case "Map":
                 $valueType = $storageItem["type"]["MapType"]["values"];
@@ -60,7 +59,7 @@ class StorageKey
                 break;
             case "PlainType":
                 $valueType = $storageItem["type"]["plain_type"];
-                array_push($hashers, "Twox64Concat");
+                $hashers[] = "Twox64Concat";
                 break;
             case "NMap":
                 $valueType = $storageItem["type"]["NMap"]["value"];
@@ -85,7 +84,6 @@ class StorageKey
     {
         $this->encodeKey = $encodeKey;
         $this->scaleType = $scaleType;
-
     }
 
 }

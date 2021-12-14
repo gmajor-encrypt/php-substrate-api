@@ -43,7 +43,7 @@ class Hasher
             case "Identity":
                 return $hex;
             case "Blake2_128Concat":
-                return sprintf("%s%s", sodium_bin2hex(sodium_crypto_generichash(hex2bin($hex), '', 16)), Util::trimHex($hex));
+                return sprintf("%s%s", sodium_bin2hex(sodium_crypto_generichash(hex2bin( Util::trimHex($hex)), '', 16)), Util::trimHex($hex));
             default:
                 throw new \InvalidArgumentException(sprintf("invalid hasher %s", $hasher));
         }
