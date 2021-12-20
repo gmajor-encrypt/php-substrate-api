@@ -4,6 +4,10 @@
 PHP Substrate RPC Api
 
 
+## Requirement
+
+php >=8.0 (install ffi https://www.php.net/manual/en/intro.ffi.php)
+
 ## Installation
 
 ```sh
@@ -21,3 +25,49 @@ Codec supports `PSR-4` autoloaders.
 # When installed via composer
 require_once 'vendor/autoload.php';
 ```
+
+
+### RPC
+
+* Client
+
+```php
+<?php
+use Rpc\SubstrateRpc;
+// http 
+$httpClient = new SubstrateRpc("https://kusama-rpc.polkadot.io/");
+// websocket
+$websocketClient = new SubstrateRpc("wss://kusama-rpc.polkadot.io/");
+```
+
+* Read
+
+```php
+<?php
+use Rpc\SubstrateRpc;
+$client = new SubstrateRpc("wss://kusama-rpc.polkadot.io/");
+$client->rpc->system->health();
+```
+
+
+### Example
+
+More examples can refer to the test file https://github.com/gmajor-encrypt/php-substrate-api/tree/master/test/Rpc
+
+## Test
+
+```
+make test
+```
+
+## Resources
+
+- [sr25519](https://github.com/gmajor-encrypt/sr25519-bindings)
+- [Polkadot.js](http://polkadot.js.org/)
+- [substrate.dev](https://docs.substrate.io/v3/runtime/custom-rpcs/)
+- [substrate-api-sidecar](https://github.com/paritytech/substrate-api-sidecar)
+
+
+## License
+
+The package is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT)
