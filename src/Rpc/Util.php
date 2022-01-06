@@ -10,7 +10,7 @@ class Util
      *
      * @param $endPoint
      * @param $params
-     * @return mixed
+     * @return array
      */
     public static function requestWithPayload ($endPoint, $params): array
     {
@@ -31,11 +31,12 @@ class Util
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headerTotal = strlen($return);
         $bodySize = $headerTotal - $headerSize;
-        $body = substr($return, $headerSize, $bodySize);
-        return json_decode($body, true);
+        return json_decode(substr($return, $headerSize, $bodySize), true);
     }
 
     /**
+     * Trim 0x prefix
+     *
      * @param $hexString string
      * @return string
      */
@@ -45,6 +46,8 @@ class Util
     }
 
     /**
+     * Add 0x prefix
+     *
      * @param $hexString string
      * @return string
      */

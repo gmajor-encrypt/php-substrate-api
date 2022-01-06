@@ -2,7 +2,6 @@
 
 namespace Rpc\Substrate;
 
-use http\Exception\InvalidArgumentException;
 use Rpc\IClient;
 
 class Method

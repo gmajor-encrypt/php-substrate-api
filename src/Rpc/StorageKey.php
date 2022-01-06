@@ -6,12 +6,20 @@ use Rpc\Hasher\Hasher;
 
 class StorageKey
 {
+
+    // storage value type
     public string $scaleType;
 
+    // storage key
     public string $encodeKey;
 
     /**
-     * StorageKey encode
+
+     *  StorageKey encode
+     *  When you use the Substrate RPC to access a storage item, you only need to provide the key associated with that item
+     *
+     *
+     * https://docs.substrate.io/v3/advanced/storage/#querying-storage
      *
      * @param string $moduleName
      * @param string $storageName
@@ -45,22 +53,27 @@ class StorageKey
         $valueType = "";
         $hashers = [];
         switch ($storageItem["type"]["origin"]) {
+            // Storage map keys v13
             case "MapType":
                 $valueType = $storageItem["type"]["map_type"]["value"];
                 $hashers[] = $storageItem["type"]["map_type"]["hasher"];
                 break;
+            // v14 map storage
             case "Map":
                 $valueType = $storageItem["type"]["MapType"]["values"];
                 $hashers = array_merge($hashers, $storageItem["type"]["MapType"]["hashers"]);
                 break;
+            // v14 map storage
             case "DoubleMapType":
                 $valueType = $storageItem["type"]["DoubleMapType"]["value"];
                 $hashers = array_merge($hashers, [$storageItem["type"]["MapType"]["hashers"], $storageItem["type"]["DoubleMapType"]["key2Hasher"]]);
                 break;
+            // PlainType
             case "PlainType":
                 $valueType = $storageItem["type"]["plain_type"];
                 $hashers[] = "Twox64Concat";
                 break;
+            // Storage map keys v13
             case "NMap":
                 $valueType = $storageItem["type"]["NMap"]["value"];
                 $hashers = array_merge($hashers, $storageItem["type"]["NMapType"]["hashers"]);
@@ -71,6 +84,9 @@ class StorageKey
         }
 
         $hash = new Hasher();
+
+        // To calculate the key for a simple Storage Value, take the TwoX 128 hash of the name of the pallet
+        //  that contains the Storage Value and append to it the TwoX 128 hash of the name of the Storage Value itself.
         $encodeKey = $hash->ByHasherName("Twox128", $moduleName) . $hash->ByHasherName("Twox128", $storageName);
 
         foreach ($args as $index => $arg) {

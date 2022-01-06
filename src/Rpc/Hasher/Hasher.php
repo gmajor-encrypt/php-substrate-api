@@ -10,6 +10,8 @@ class Hasher
 {
     /**
      * @var sr25519
+     * sr25519 hasher
+     * https://github.com/gmajor-encrypt/sr25519-bindings
      */
     public sr25519 $sr;
 

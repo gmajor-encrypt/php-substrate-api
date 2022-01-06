@@ -6,7 +6,7 @@ class SubstrateRpc
 {
 
     /**
-     * @var Rpc
+     * @var Rpc instance
      */
     public Rpc $rpc;
 

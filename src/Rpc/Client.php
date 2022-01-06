@@ -5,11 +5,13 @@ namespace Rpc;
 class Client implements IClient
 {
     /**
+     * http endpoint url
      * @var string
      */
     public static string $HTTP_ENDPOINT = "";
 
     /**
+     * websocket endpoint url
      * @var string
      */
     public static string $WS_ENDPOINT = "";
@@ -33,16 +35,6 @@ class Client implements IClient
         throw new \InvalidArgumentException("endpoint only support http or ws");
     }
 
-    /**
-     * current timestamp
-     *
-     * @return string
-     */
-    public static function getTimestamp (): string
-    {
-        ini_set("date.timezone", "UTC");
-        return date("Y-m-d\TH:i:s") . substr((string)microtime(), 1, 4) . 'Z';
-    }
 
     public function read (string $method, array $params = []): mixed
     {
