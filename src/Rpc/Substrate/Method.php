@@ -55,7 +55,7 @@ class Method
     public function __call (string $call, array $attributes)
     {
         $method = sprintf("%s_%s", $this->pallet, $call);
-        $res = $this->client->read($method);
+        $res = $this->client->read($method, $attributes);
         if (array_key_exists("error", $res)) {
             throw new \InvalidArgumentException(sprintf("RPC %s not support", $method));
         }

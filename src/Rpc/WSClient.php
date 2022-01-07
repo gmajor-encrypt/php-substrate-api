@@ -18,7 +18,7 @@ class WSClient extends Client
      */
     public function __construct (string $endpoint)
     {
-        $this->client = new WS($endpoint);
+        $this->client = new WS($endpoint, ["timeout" => 60, "fragment_size" => 1024 * 10]);
         parent::__construct($endpoint);
     }
 
@@ -33,7 +33,7 @@ class WSClient extends Client
     public function read (string $method, array $params = []): array
     {
         $this->client->send(json_encode(Json2::build($method, $params)));
-        return json_decode($this->client->receive(),true);
+        return json_decode($this->client->receive(), true);
     }
 
     /**

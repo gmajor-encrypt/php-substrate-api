@@ -9,7 +9,7 @@ use SodiumException;
 class Hasher
 {
     /**
-     * @var sr25519
+     * @var sr25519 FFI
      * sr25519 hasher
      * https://github.com/gmajor-encrypt/sr25519-bindings
      */
@@ -22,6 +22,12 @@ class Hasher
 
     /**
      * hash a hex string by hash name
+     *
+     * XXhash https://docs.substrate.io/v3/advanced/cryptography/#xxhash
+     * blake2 https://docs.substrate.io/v3/advanced/cryptography/#blake2
+     * sr25519 https://docs.substrate.io/v3/advanced/cryptography/#sr25519
+     * ed25519 https://docs.substrate.io/v3/advanced/cryptography/#ed25519
+     *
      *
      * @param string $hasher
      * @param string $hex
