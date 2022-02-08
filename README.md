@@ -29,24 +29,26 @@ require_once 'vendor/autoload.php';
 
 ### RPC
 
-* Client
+* Generate HTTP|Websocket Client
 
 ```php
 <?php
 use Rpc\SubstrateRpc;
-// http 
+// http client
 $httpClient = new SubstrateRpc("https://kusama-rpc.polkadot.io/");
-// websocket
+// websocket client 
 $websocketClient = new SubstrateRpc("wss://kusama-rpc.polkadot.io/");
 ```
 
-* Read
+* Read RPC Data
 
 ```php
 <?php
 use Rpc\SubstrateRpc;
 $client = new SubstrateRpc("wss://kusama-rpc.polkadot.io/");
-$client->rpc->system->health();
+$res = $client->rpc->system->health(); // call rpc system_health
+var_dump($res); #{"peers": 31, "isSyncing": false, "shouldHavePeers": true}
+
 ```
 
 

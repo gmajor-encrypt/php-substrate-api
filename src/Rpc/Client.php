@@ -2,16 +2,27 @@
 
 namespace Rpc;
 
+
+/**
+ * RPC Client Class
+ *
+ * Generic transport provider for handling method call transports for applications that interact with Polkadot clients.
+ * It provides the interface for making RPC calls.
+ * Two clients are provided, one that allows the use of HTTP as the transport and the other that uses WebSockets.
+ */
 class Client implements IClient
 {
     /**
+     *
      * http endpoint url
+     *
      * @var string
      */
     public static string $HTTP_ENDPOINT = "";
 
     /**
      * websocket endpoint url
+     *
      * @var string
      */
     public static string $WS_ENDPOINT = "";
@@ -36,12 +47,7 @@ class Client implements IClient
     }
 
 
-    public function read (string $method, array $params = []): mixed
-    {
-        // TODO: Implement subscribe() method.
-    }
+    public function read (string $method, array $params = []): mixed { }
 
-    public function close ()
-    {
-    }
+    public function close () { }
 }
