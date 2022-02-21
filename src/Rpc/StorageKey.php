@@ -7,16 +7,35 @@ use Rpc\Hasher\Hasher;
 class StorageKey
 {
 
-    // storage value type
+    /**
+     * $scaleType
+     * storage value type, decode raw value this scaleType
+     *
+     * @var string
+     */
     public string $scaleType;
 
-    // storage key
+    /**
+     * storage key
+     * encoded key details
+     *
+     * @var string
+     */
+
     public string $encodeKey;
 
-    /**
+    public function __construct (string $scaleType, string $encodeKey)
+    {
+        $this->encodeKey = $encodeKey;
+        $this->scaleType = $scaleType;
+    }
 
+    /**
      *  StorageKey encode
      *  When you use the Substrate RPC to access a storage item, you only need to provide the key associated with that item
+     *  ui https://polkadot.js.org/apps/#/chainstate
+     *
+     *  https://docs.substrate.io/v3/advanced/storage/#storage-value-keys
      *
      *
      * https://docs.substrate.io/v3/advanced/storage/#querying-storage
@@ -34,7 +53,7 @@ class StorageKey
         $storageName = ucfirst($storageName);
 
         $storageItem = array();
-
+        // checkout storage item
         foreach ($metadata["pallets"] as $v) {
             if (!strcasecmp($v["name"], $moduleName)) {
                 if (!is_null($v["storage"])) {
@@ -71,7 +90,6 @@ class StorageKey
             // PlainType
             case "PlainType":
                 $valueType = $storageItem["type"]["plain_type"];
-                $hashers[] = "Twox64Concat";
                 break;
             // Storage map keys v13
             case "NMap":
@@ -86,8 +104,8 @@ class StorageKey
         $hash = new Hasher();
 
         // To calculate the key for a simple Storage Value, take the TwoX 128 hash of the name of the pallet
-        //  that contains the Storage Value and append to it the TwoX 128 hash of the name of the Storage Value itself.
-        $encodeKey = $hash->ByHasherName("Twox128", $moduleName) . $hash->ByHasherName("Twox128", $storageName);
+        //  that contains the Storage Value and append to it the TwoX 128 hash of the name of the Storage Value itself
+        $encodeKey = $hash->ByHasherName("Twox128", ucfirst($moduleName)) . $hash->ByHasherName("Twox128", $storageName);
 
         foreach ($args as $index => $arg) {
             $encodeKey = $encodeKey . $hash->ByHasherName($hashers[$index], $arg);
@@ -96,10 +114,5 @@ class StorageKey
         return new StorageKey($valueType, $encodeKey);
     }
 
-    public function __construct (string $scaleType, string $encodeKey)
-    {
-        $this->encodeKey = $encodeKey;
-        $this->scaleType = $scaleType;
-    }
 
 }

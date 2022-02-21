@@ -2,7 +2,6 @@
 
 namespace Rpc\Test;
 
-use Rpc\WSClient;
 use Rpc\SubstrateRpc;
 use PHPUnit\Framework\TestCase;
 

@@ -22,12 +22,31 @@ final class HashTest extends TestCase
      */
     public function testHasher ()
     {
+        // XXHash64
         $this->assertEquals("398167db5dcadc4f", $this->hasher->XXHash64(0, "test"));
-        $this->assertEquals("c2261276cc9d1f8598ea4b6a74b15c2f", $this->hasher->TwoxHash("Balances", 128));
+        $this->assertEquals("ad2ecd66275a1ded", $this->hasher->XXHash64(100, "test100"));
+        $this->assertEquals("37da8eb7aca5d8f0", $this->hasher->XXHash64(99999999999999, "test100124124124214"));
+        // TwoxHash 128
+        $this->assertEquals("5c0d1176a568c1f92944340dbfed9e9c", $this->hasher->TwoxHash("Sudo", 128));
+        $this->assertEquals("530ebca703c85910e7164cb7d1c9e47b", $this->hasher->TwoxHash("Key", 128));
+        $this->assertEquals(32, strlen($this->hasher->TwoxHash("BalancesLength", 128)));
+        // TwoxHash 256
         $this->assertEquals("c2261276cc9d1f8598ea4b6a74b15c2f1982647952c5af2b7adeff7496e6388b", $this->hasher->TwoxHash("Balances", 256));
+        // TwoxHash 512
+        $this->assertEquals("c2261276cc9d1f8598ea4b6a74b15c2f1982647952c5af2b7adeff7496e6388bd57f6573075368da523ba85a560e14054601e9f5eb82ac50ea5e348c60d59261", $this->hasher->TwoxHash("Balances", 512));
+        // Twox64Concat
         $this->assertEquals("b99d880ec681799c4163636f756e74", $this->hasher->ByHasherName("Twox64Concat", "0x" . bin2hex("Account")));
+        $this->assertEquals("85553bd51935f6dfad2ecd66275a1ded", $this->hasher->ByHasherName("Twox64Concat", "0xad2ecd66275a1ded"));
+        // Blake2_128
         $this->assertEquals("5328fa027215451bcef79a1905b063d7", $this->hasher->ByHasherName("Blake2_128", "20be52a5a80cad065651ec35fcb1a212bc669aabb52d68d8780a41e29ec9c83e"));
+        // Blake2_256
         $this->assertEquals("bc024881cc9d7e3e4474fa73a769e921490f148c24f06228695051cfe793b6f0", $this->hasher->ByHasherName("Blake2_256", "20be52a5a80cad065651ec35fcb1a212bc669aabb52d68d8780a41e29ec9c83e"));
-        $this->assertEquals("68656c6c6f", $this->hasher->ByHasherName("Identity", "68656c6c6f"));
+        // Identity
+        $this->assertEquals("68656c6c6f", $this->hasher->ByHasherName("Identity", "0x68656c6c6f"));
+        $this->assertEquals("686868686868", $this->hasher->ByHasherName("Identity", "hhhhhh"));
+
+        // unknown hasher
+        $this->expectException(\InvalidArgumentException::class);
+        $this->hasher->ByHasherName("unknownHasher", "hasher");
     }
 }
