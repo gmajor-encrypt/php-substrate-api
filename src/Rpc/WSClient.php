@@ -12,13 +12,25 @@ class WSClient extends Client
 
     public WS $client;
 
+    public array $header;
+
+    public bool $isConnected;
+
     /**
      * Websocket constructor.
      *
+     * @param string $endpoint
+     * @param array $header
      */
-    public function __construct (string $endpoint)
+    public function __construct (string $endpoint, array $header = [])
     {
-        $this->client = new WS($endpoint, ["timeout" => 60, "fragment_size" => 1024 * 10]);
+        if (!str_starts_with($endpoint, 'ws://') && !str_starts_with($endpoint, 'wss://')) {
+            throw new \InvalidArgumentException(sprintf("invalid protocol %s, only support ws or wss protocol", $endpoint));
+        }
+
+        $this->client = new WS($endpoint, ["timeout" => 60, "fragment_size" => 1024 * 10, "headers" => $header]);
+        $this->header = $header;
+        $this->isConnected = true;
         parent::__construct($endpoint);
     }
 

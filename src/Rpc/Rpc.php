@@ -19,16 +19,19 @@ class Rpc
 
 
     /**
+     * Rpc client, allow websocket(wss/ws) or http(https/http)
+     *
      * @param string $endpoint
+     * @param array $header
      */
-    public function __construct (string $endpoint)
+    public function __construct (string $endpoint, array $header = [])
     {
         $parse = parse_url($endpoint);
 
         if ($parse["scheme"] == "ws" || $parse["scheme"] == "wss") {
-            $this->client = new WSClient($endpoint);
+            $this->client = new WSClient($endpoint, $header);
         } elseif ($parse["scheme"] == "http" || $parse["scheme"] == "https") {
-            $this->client = new HttpClient($endpoint);
+            $this->client = new HttpClient($endpoint, $header);
         }
         if (!isset($this->client)) {
             throw new \InvalidArgumentException("please provider http/ws endpoint");

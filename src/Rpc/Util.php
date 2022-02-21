@@ -8,16 +8,16 @@ class Util
     /**
      * HTTP REQUEST POST json payload
      *
-     * @param $endPoint
-     * @param $params
+     * @param string $endPoint
+     * @param array $params
+     * @param array $header
      * @return array
      */
-    public static function requestWithPayload ($endPoint, $params): array
+    public static function requestWithPayload (string $endPoint, array $params, array $header): array
     {
         $body = $params ? json_encode($params, JSON_UNESCAPED_SLASHES) : '';
         $ch = curl_init();
-
-        curl_setopt($ch, CURLOPT_HTTPHEADER, ["Accept: application/json", "Content-Type: application/json"]);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array_merge(["Accept: application/json", "Content-Type: application/json"], $header));
         curl_setopt($ch, CURLOPT_URL, $endPoint);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
@@ -29,9 +29,7 @@ class Util
         $return = curl_exec($ch);
 
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-        $headerTotal = strlen($return);
-        $bodySize = $headerTotal - $headerSize;
-        return json_decode(substr($return, $headerSize, $bodySize), true);
+        return json_decode(substr($return, $headerSize, strlen($return) - $headerSize), true);
     }
 
     /**
