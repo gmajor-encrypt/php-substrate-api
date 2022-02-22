@@ -45,6 +45,7 @@ final class HashTest extends TestCase
         $this->assertEquals("5328fa027215451bcef79a1905b063d7", $this->hasher->ByHasherName("Blake2_128", "20be52a5a80cad065651ec35fcb1a212bc669aabb52d68d8780a41e29ec9c83e"));
         // Blake2_256
         $this->assertEquals("bc024881cc9d7e3e4474fa73a769e921490f148c24f06228695051cfe793b6f0", $this->hasher->ByHasherName("Blake2_256", "20be52a5a80cad065651ec35fcb1a212bc669aabb52d68d8780a41e29ec9c83e"));
+        $this->assertEquals("3e1aed8e76c3ca974e3e628e5a393b1720be", $this->hasher->ByHasherName("Blake2_128Concat", "20be"));
         // Identity
         $this->assertEquals("68656c6c6f", $this->hasher->ByHasherName("Identity", "0x68656c6c6f"));
         $this->assertEquals("686868686868", $this->hasher->ByHasherName("Identity", "hhhhhh"));

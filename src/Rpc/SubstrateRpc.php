@@ -12,7 +12,7 @@ class SubstrateRpc
 
 
     /**
-     * construct
+     * Rpc construct
      *
      * @param string $endpoint
      */

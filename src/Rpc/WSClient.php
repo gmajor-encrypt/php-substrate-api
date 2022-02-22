@@ -9,11 +9,22 @@ use WebSocket\ConnectionException;
 
 class WSClient extends Client
 {
-
+    /**
+     * websocket connection instance
+     * @var WS
+     */
     public WS $client;
 
+    /**
+     * Custom http header
+     * @var array
+     */
     public array $header;
 
+    /**
+     * websocket connection status
+     * @var bool
+     */
     public bool $isConnected;
 
     /**
