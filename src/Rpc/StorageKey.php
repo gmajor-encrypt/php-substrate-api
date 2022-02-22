@@ -106,7 +106,6 @@ class StorageKey
         // To calculate the key for a simple Storage Value, take the TwoX 128 hash of the name of the pallet
         //  that contains the Storage Value and append to it the TwoX 128 hash of the name of the Storage Value itself
         $encodeKey = $hash->ByHasherName("Twox128", ucfirst($moduleName)) . $hash->ByHasherName("Twox128", $storageName);
-
         foreach ($args as $index => $arg) {
             $encodeKey = $encodeKey . $hash->ByHasherName($hashers[$index], $arg);
         }

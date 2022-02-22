@@ -26,6 +26,9 @@ final class HashTest extends TestCase
         $this->assertEquals("398167db5dcadc4f", $this->hasher->XXHash64(0, "test"));
         $this->assertEquals("ad2ecd66275a1ded", $this->hasher->XXHash64(100, "test100"));
         $this->assertEquals("37da8eb7aca5d8f0", $this->hasher->XXHash64(99999999999999, "test100124124124214"));
+        // XXHash64 with hex msg
+        $this->assertEquals("5153cb1f00942ff4", $this->hasher->XXHash64(0, "0x01000000"));
+
         // TwoxHash 128
         $this->assertEquals("5c0d1176a568c1f92944340dbfed9e9c", $this->hasher->TwoxHash("Sudo", 128));
         $this->assertEquals("530ebca703c85910e7164cb7d1c9e47b", $this->hasher->TwoxHash("Key", 128));
@@ -37,6 +40,7 @@ final class HashTest extends TestCase
         // Twox64Concat
         $this->assertEquals("b99d880ec681799c4163636f756e74", $this->hasher->ByHasherName("Twox64Concat", "0x" . bin2hex("Account")));
         $this->assertEquals("85553bd51935f6dfad2ecd66275a1ded", $this->hasher->ByHasherName("Twox64Concat", "0xad2ecd66275a1ded"));
+        $this->assertEquals("5153cb1f00942ff401000000", $this->hasher->ByHasherName("Twox64Concat", "0x01000000"));
         // Blake2_128
         $this->assertEquals("5328fa027215451bcef79a1905b063d7", $this->hasher->ByHasherName("Blake2_128", "20be52a5a80cad065651ec35fcb1a212bc669aabb52d68d8780a41e29ec9c83e"));
         // Blake2_256

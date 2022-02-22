@@ -43,6 +43,11 @@ final class StorageKeyTest extends TestCase
             new StorageKey("AccountInfo", "26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da9ae127a8f8f6f622fa2de1ab4de31f2751c79a5ada2ff0d55aaa65dfeaf0cba667babf312f9bf100444279b34cd769e49"),
             StorageKey::encode("System", "Account", $this->metadata, ["0x1c79a5ada2ff0d55aaa65dfeaf0cba667babf312f9bf100444279b34cd769e49"]));
 
+        // storage key with double map
+        $this->assertEquals(
+            new StorageKey("Exposure", "5f3e4907f716ac89b6347d15ececedca8bde0a0ea8864605e3b68ed9cb2da01b5153cb1f00942ff40100000009e404b71daf5f559094c424429709a324e65c64f151630e6c3700192bba8abd3c8e2218b61c0a7a"),
+            StorageKey::encode("Staking", "ErasStakers", $this->metadata, ["0x01000000", "0x9094c424429709a324e65c64f151630e6c3700192bba8abd3c8e2218b61c0a7a"]));
+
         // Invalid module or storage name, like moonbeam authorMapping module
         $this->expectException(\InvalidArgumentException::class);
         StorageKey::encode("authorMapping", "mappingWithDeposit", $this->metadata);

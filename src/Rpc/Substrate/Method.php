@@ -8,6 +8,8 @@ class Method
 {
 
     /**
+     * rpc client inject
+     *
      * @var IClient
      */
     public IClient $client;
@@ -57,7 +59,7 @@ class Method
         $method = sprintf("%s_%s", $this->pallet, $call);
         $res = $this->client->read($method, $attributes);
         if (array_key_exists("error", $res)) {
-            throw new \InvalidArgumentException(sprintf("RPC %s not support", $method));
+            throw new \InvalidArgumentException(sprintf("Read rpc get error %s", $res["error"]["message"]));
         }
         return $res;
     }

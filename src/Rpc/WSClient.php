@@ -20,7 +20,7 @@ class WSClient extends Client
      * Websocket constructor.
      *
      * @param string $endpoint
-     * @param array $header
+     * @param array $header  custom http header
      */
     public function __construct (string $endpoint, array $header = [])
     {
@@ -44,6 +44,10 @@ class WSClient extends Client
      */
     public function read (string $method, array $params = []): array
     {
+        if(!$this->isConnected){
+            throw new ConnectionException("this connection has been closed");
+        }
+
         $this->client->send(json_encode(Json2::build($method, $params)));
         return json_decode($this->client->receive(), true);
     }
@@ -53,6 +57,7 @@ class WSClient extends Client
      */
     public function close ()
     {
+        $this->isConnected = false;
         $this->client->close();
     }
 }
