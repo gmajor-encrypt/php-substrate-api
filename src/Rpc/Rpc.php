@@ -27,7 +27,7 @@ class Rpc
     public function __construct (string $endpoint, array $header = [])
     {
         $parse = parse_url($endpoint);
-
+        // check url protocol is websocket or http
         if ($parse["scheme"] == "ws" || $parse["scheme"] == "wss") {
             $this->client = new WSClient($endpoint, $header);
         } elseif ($parse["scheme"] == "http" || $parse["scheme"] == "https") {
