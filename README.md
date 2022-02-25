@@ -120,6 +120,17 @@ More examples can refer to the test file https://github.com/gmajor-encrypt/php-s
 make test
 ```
 
+## Troubleshooting
+
+### FFI error FFI\Exception: Failed loading '../php-substrate-api/vendor/gmajor/sr25519-bindings/src/Crypto/sr25519.so'
+
+The current default sr25519-bindings FFI is for mac.  Unfortunately, php composer currently does not support automatic compilation after install, 
+so manual compilation is required. You can run this script
+```bash
+cd vendor/gmajor/sr25519-bindings/go && go build -buildmode=c-shared -o ../src/Crypto/sr25519.so .
+```
+
+
 ## Resources
 
 - [sr25519](https://github.com/gmajor-encrypt/sr25519-bindings)
