@@ -54,4 +54,18 @@ final class HashTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->hasher->ByHasherName("unknownHasher", "hasher");
     }
+
+    /**
+     * @throws \SodiumException
+     */
+    public function TestEd25519 ()
+    {
+        $pair = sodium_crypto_sign_keypair();
+        $publicKey = sodium_crypto_sign_publickey($pair);
+        $secretKey = sodium_crypto_sign_secretkey($pair);
+        $this->assertEquals(substr(sodium_bin2hex($secretKey), 64), sodium_bin2hex($publicKey));
+        $pair2 = sodium_crypto_sign_seed_keypair(sodium_hex2bin(substr(sodium_bin2hex($secretKey), 0, 64)));
+        $this->assertEquals(sodium_bin2hex($publicKey), sodium_bin2hex(sodium_crypto_sign_publickey($pair2)));
+    }
+
 }
