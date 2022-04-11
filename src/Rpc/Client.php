@@ -27,7 +27,6 @@ class Client implements IClient
      */
     public static string $WS_ENDPOINT = "";
 
-
     public function __construct (string $endpoint)
     {
 
@@ -47,7 +46,7 @@ class Client implements IClient
     }
 
 
-    public function read (string $method, array $params = []): mixed { }
+    public function read (string $method, array $params = []): array { return array();}
 
     public function close () { }
 }
