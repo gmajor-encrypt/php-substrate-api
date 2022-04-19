@@ -2,6 +2,7 @@
 
 namespace Rpc;
 
+use Rpc\Hasher\Hasher;
 use Rpc\KeyPair\KeyPair;
 use WebSocket\ConnectionException;
 
@@ -19,6 +20,13 @@ class SubstrateRpc
     public Tx $tx;
 
     /**
+     * hasher instance
+     *
+     * @var Hasher
+     */
+    public Hasher $hasher;
+
+    /**
      * Rpc construct
      *
      * @param string $endpoint
@@ -29,6 +37,7 @@ class SubstrateRpc
     {
         $this->rpc = new Rpc($endpoint, $header);
         $this->tx = new Tx($this->rpc);
+        $this->hasher = new Hasher();
     }
 
     /**
@@ -65,7 +74,7 @@ class SubstrateRpc
      * @param keyPair $keyPair
      * @return void
      */
-    public function setSigner (keyPair $keyPair)
+    private function setSigner (keyPair $keyPair)
     {
         $this->tx->setkeyPair($keyPair);
     }

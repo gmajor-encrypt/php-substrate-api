@@ -43,15 +43,14 @@ class Extrinsic
 
     /**
      * Extrinsic encode
-     * @return void
+     *
+     * @return string
      */
-    public function encode(){
-
-
+    public function encode (): string
+    {
 
 
     }
-
 
 
 }

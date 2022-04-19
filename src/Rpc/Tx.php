@@ -2,13 +2,9 @@
 
 namespace Rpc;
 
-use Codec\Base;
-use Codec\ScaleBytes;
 use Codec\Types\ScaleInstance;
 use Rpc\KeyPair\KeyPair;
 use Rpc\Pallet\Pallet;
-use Rpc\Substrate\Method;
-use WebSocket\ConnectionException;
 
 class Tx
 {
@@ -62,24 +58,10 @@ class Tx
         if (!isset($this->keyPair)) {
             throw new \InvalidArgumentException("singer keypair not set");
         }
-        return new Pallet($this->rpc, $pallet);
+        return new Pallet($this->rpc, $pallet,$this->keyPair);
     }
 
 
-    /**
-     * sign Extrinsic
-     * support ed25519 or sr25519
-     *
-     * return signature
-     *
-     * @param Extrinsic $extrinsic
-     * @param ExtrinsicOption $option
-     * @return string
-     */
-    public function sign (Extrinsic $extrinsic, ExtrinsicOption $option): string
-    {
-        return "";
-    }
 
 
     /**
