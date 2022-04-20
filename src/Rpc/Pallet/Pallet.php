@@ -2,8 +2,6 @@
 
 namespace Rpc\Pallet;
 
-use Rpc\Extrinsic;
-use Rpc\ExtrinsicOption;
 use Rpc\KeyPair\KeyPair;
 use Rpc\Rpc;
 
@@ -54,14 +52,13 @@ class Pallet
      */
     public function __call (string $call, array $attributes)
     {
-        // build extrinsic todo
-        // sign
-        $signature = $this->sign();
+        $signature = $this->signAndBuildExtrinsic(["module_id" => $this->pallet, "call_name" => $call, "params" => $attributes]);
         return $this->submitAndWatchExtrinsic($signature);
     }
 
 
     /**
+     * submit and send submitAndWatchExtrinsic rpc
      * submitAndWatchExtrinsic
      * send signed Extrinsic
      *
@@ -80,14 +77,35 @@ class Pallet
      *
      * return signature
      *
-     * @param Extrinsic $extrinsic
-     * @param ExtrinsicOption $option
+     * @param array $call
      * @return string
      */
-    public function sign (Extrinsic $extrinsic, ExtrinsicOption $option): string
+    public function signAndBuildExtrinsic (array $call): string
     {
-        $encodeExtrinsic = $extrinsic->encode();
-        $msg = "";
-        return $this->keyPair->sign($msg);
+        $encodeCall = $this->rpc->codec->createTypeByTypeString("Call")->setMetadata($this->rpc->metadata)->encode($call);
+        $genesisHash = ""; // chain_getBlockHash
+        $opt = new ExtrinsicOption($genesisHash);
+        $opt->era = "00"; // Era  MortalEra
+        $opt->nonce = 0; // nonce system_accountNextIndex
+        $opt->specVersion = 0; // spec version state_getRuntimeVersion
+        $opt->tip = "0"; //
+        $opt->transactionVersion = 0; // TransactionVersion
+
+        $payload = new ExtrinsicPayload($opt, $encodeCall);
+        $signature = $payload->sign($this->keyPair, $payload->encode($this->rpc->codec));
+
+        $extrinsic = [
+            "extrinsic_length" => 145,
+            'version' => '84',
+            "account_id" => ["Id" => $this->keyPair->pk],
+            "signature" => [$this->keyPair->type => $signature],
+            "era" => $opt->era,
+            "nonce" => $opt->nonce,
+            "tip" => $opt->nonce,
+            'module_id' => $call["module_id"],
+            'call_name' => $call["call_name"],
+            'params' => $call["params"]
+        ];
+        return $this->rpc->codec->createTypeByTypeString("Extrinsic")->setMetadata($this->rpc->metadata)->encode($extrinsic);
     }
 }

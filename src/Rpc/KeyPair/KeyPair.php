@@ -9,9 +9,15 @@ class KeyPair
 {
     private IKeyPair $pair;
 
+    public string $type;
+
+    public string $pk;
+
     public function __construct (IKeyPair $pair)
     {
         $this->pair = $pair;
+        $this->type = $pair->type();
+        $this->pk = $pair->pk();
     }
 
 

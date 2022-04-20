@@ -45,7 +45,7 @@ class Rpc
      */
     public function __construct (string $endpoint, array $header = [])
     {
-        $this->client = SubstrateRpc::setClient($endpoint,$header);
+        $this->client = SubstrateRpc::setClient($endpoint, $header);
         $m = new Method($this->client);
         $this->methods = $m->methods()["result"]["methods"];
         $metadataRaw = $m->getMetadata();

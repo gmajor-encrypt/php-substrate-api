@@ -67,8 +67,12 @@ final class ClientTest extends TestCase
         $header = $wsClient->rpc->chain->getBlock("0x3ef1a34520b3c00d3b32b86760f0bbcfc6c2fa89d65a27c48929287ae202462c")["result"]["block"]["header"];
         $this->assertEquals("0xa59b46", $header["number"]);
         // chain_getBlockHash with param blockNumber
-        $blockHash = $wsClient->rpc->chain->getBlockHash("0xf4240")["result"];
+        $blockHash = $wsClient->rpc->chain->getBlockHash("0xf4240");
         $this->assertEquals("0xb267ffd706bbb93779eab04f47c7038031657b0a863794dbdd73170e3976c3e7", $blockHash);
+
+        $this->assertEquals("0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe", $wsClient->rpc->chain->getBlockHash("0x0"));
+        $this->assertEquals(0, $wsClient->rpc->system->accountNextIndex("HLgKKHcwDtvdxJWQUttnt5PrzwqUsEXBAshetVt97miXsen"));
+        $this->assertEquals("kusama", $wsClient->rpc->state->getRuntimeVersion()["specName"]);
 
         // state_call with no params will raise error
         $this->expectException(\InvalidArgumentException::class);

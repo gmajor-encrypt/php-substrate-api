@@ -63,6 +63,40 @@ class Method
         return $res["result"];
     }
 
+    /**
+     * getBlockHash
+     *
+     * @return string blockNum hex
+     */
+    public function getBlockHash (string $blockNum): string
+    {
+        $res = $this->client->read("chain_getBlockHash", [$blockNum]);
+        return $res["result"];
+    }
+
+    /**
+     * accountNextIndex
+     *
+     * @param string $accountId
+     * @return int
+     */
+    public function accountNextIndex (string $accountId): int
+    {
+        $res = $this->client->read("system_accountNextIndex", [$accountId]);
+        return $res["result"];
+    }
+
+    /**
+     * getRuntimeVersion
+     *
+     * @return array
+     */
+    public function getRuntimeVersion (): array
+    {
+        $res = $this->client->read("state_getRuntimeVersion", []);
+        return $res["result"];
+    }
+
 
     /**
      * @param string $call

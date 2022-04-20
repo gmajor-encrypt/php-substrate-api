@@ -19,8 +19,6 @@ class ed25519 implements IKeyPair
      */
     private string $sk;
 
-    public stri $hasher;
-
     /**
      *
      * @var string
@@ -46,6 +44,24 @@ class ed25519 implements IKeyPair
      */
     public function sign (string $msg): string
     {
-        return sodium_crypto_sign_detached($msg, $this->keyPair);
+        return sodium_crypto_sign_detached($msg, $this->sk);
+    }
+
+    /**
+     * sr25519
+     * @return string
+     */
+    public function type (): string
+    {
+        return "Ed25519";
+    }
+
+    /**
+     * public key
+     * @return string
+     */
+    public function pk (): string
+    {
+        return $this->pk;
     }
 }

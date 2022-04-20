@@ -11,7 +11,7 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=8.0",
-    "textalk/websocket": "1.0.*",
+    "textalk/websocket": "dev-master",
     "ext-curl": "*",
     "ext-json": "*",
     "ext-sodium": "*",

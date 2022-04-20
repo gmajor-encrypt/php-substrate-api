@@ -1,6 +1,6 @@
 <?php
 
-namespace Rpc;
+namespace Rpc\Pallet;
 
 class ExtrinsicOption
 {
@@ -8,9 +8,9 @@ class ExtrinsicOption
     /**
      * extra CheckEra
      *
-     * @var array
+     * @var array|string
      */
-    public array $Era;
+    public array|string $era;
 
     /**
      * extra CheckNonce Compact<u32>
@@ -54,4 +54,9 @@ class ExtrinsicOption
      */
     public int $transactionVersion;
 
+    public function __construct (string $genesisHash)
+    {
+        $this->blockHash = $genesisHash;
+        $this->genesisHash = $genesisHash;
+    }
 }

@@ -58,10 +58,8 @@ class Tx
         if (!isset($this->keyPair)) {
             throw new \InvalidArgumentException("singer keypair not set");
         }
-        return new Pallet($this->rpc, $pallet,$this->keyPair);
+        return new Pallet($this->rpc, $pallet, $this->keyPair);
     }
-
-
 
 
     /**

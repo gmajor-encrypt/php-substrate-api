@@ -11,18 +11,21 @@ class WSClient extends Client
 {
     /**
      * websocket connection instance
+     *
      * @var WS
      */
     public WS $client;
 
     /**
      * Custom http header
+     *
      * @var array
      */
     public array $header;
 
     /**
      * websocket connection status
+     *
      * @var bool
      */
     public bool $isConnected;
@@ -31,7 +34,7 @@ class WSClient extends Client
      * Websocket constructor.
      *
      * @param string $endpoint
-     * @param array $header  custom http header
+     * @param array $header custom http header
      */
     public function __construct (string $endpoint, array $header = [])
     {
@@ -39,7 +42,7 @@ class WSClient extends Client
             throw new \InvalidArgumentException(sprintf("invalid protocol %s, only support ws or wss protocol", $endpoint));
         }
 
-        $this->client = new WS($endpoint, ["timeout" => 60, "fragment_size" => 1024 * 10, "headers" => $header]);
+        $this->client = new WS($endpoint, ["timeout" => 60, "fragment_size" => 1024 * 100, "headers" => $header]);
         $this->header = $header;
         $this->isConnected = true;
         parent::__construct($endpoint);
@@ -55,10 +58,9 @@ class WSClient extends Client
      */
     public function read (string $method, array $params = []): array
     {
-        if(!$this->isConnected){
+        if (!$this->isConnected) {
             throw new ConnectionException("this connection has been closed");
         }
-
         $this->client->send(json_encode(Json2::build($method, $params)));
         return json_decode($this->client->receive(), true);
     }

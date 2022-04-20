@@ -74,7 +74,7 @@ class SubstrateRpc
      * @param keyPair $keyPair
      * @return void
      */
-    private function setSigner (keyPair $keyPair)
+    public function setSigner (keyPair $keyPair)
     {
         $this->tx->setkeyPair($keyPair);
     }

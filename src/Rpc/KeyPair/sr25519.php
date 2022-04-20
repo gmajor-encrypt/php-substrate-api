@@ -48,4 +48,23 @@ class sr25519 implements IKeyPair
     {
         return $this->hasher->sr->Sign($this->keyPair, $msg);
     }
+
+
+    /**
+     * sr25519
+     * @return string
+     */
+    public function type (): string
+    {
+        return "Sr25519";
+    }
+
+    /**
+     * public key
+     * @return string
+     */
+    public function pk (): string
+    {
+        return $this->pk;
+    }
 }
