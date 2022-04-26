@@ -16,7 +16,8 @@
     "ext-json": "*",
     "ext-sodium": "*",
     "gmajor/sr25519-bindings": "dev-main",
-    "gmajor/substrate-codec-php": "dev-master"
+    "gmajor/substrate-codec-php": "dev-master",
+    "tuupola/base58": "2.x-dev"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.7 || ^9.3.0"

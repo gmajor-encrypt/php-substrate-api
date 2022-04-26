@@ -4,6 +4,7 @@ namespace Rpc\Pallet;
 
 use Rpc\KeyPair\KeyPair;
 use Rpc\Rpc;
+use Rpc\ss58;
 
 class Pallet
 {
@@ -83,13 +84,14 @@ class Pallet
     public function signAndBuildExtrinsic (array $call): string
     {
         $encodeCall = $this->rpc->codec->createTypeByTypeString("Call")->setMetadata($this->rpc->metadata)->encode($call);
-        $genesisHash = ""; // chain_getBlockHash
+        $genesisHash = $this->rpc->chain->getBlockHash("0x0"); // chain_getBlockHash
         $opt = new ExtrinsicOption($genesisHash);
         $opt->era = "00"; // Era  MortalEra
-        $opt->nonce = 0; // nonce system_accountNextIndex
-        $opt->specVersion = 0; // spec version state_getRuntimeVersion
+        $opt->nonce = $this->rpc->system->accountNextIndex(ss58::encode($this->keyPair->pk, 42)); // nonce system_accountNextIndex
+        $runtimeVersion = $this->rpc->state->getRuntimeVersion();
+        $opt->specVersion = $runtimeVersion["specVersion"]; // spec version state_getRuntimeVersion
         $opt->tip = "0"; //
-        $opt->transactionVersion = 0; // TransactionVersion
+        $opt->transactionVersion = $runtimeVersion["transactionVersion"]; // TransactionVersion
 
         $payload = new ExtrinsicPayload($opt, $encodeCall);
         $signature = $payload->sign($this->keyPair, $payload->encode($this->rpc->codec));

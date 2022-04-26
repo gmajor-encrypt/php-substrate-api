@@ -3,6 +3,7 @@
 namespace Rpc\Test;
 
 
+use Rpc\KeyPair\KeyPair;
 use Rpc\WSClient;
 use Rpc\HttpClient;
 use Rpc\SubstrateRpc;
@@ -80,5 +81,18 @@ final class ClientTest extends TestCase
 
         // close ws client connection
         $wsClient->close();
+    }
+
+    /**
+     * @throws \SodiumException
+     */
+    public function testSendTransaction ()
+    {
+        $wsClient = new SubstrateRpc("wss://kusama-rpc.polkadot.io/");
+
+        $wsClient->setSigner(KeyPair::initKeyPair("sr25519", "", $wsClient->hasher));
+
+        $wsClient->close();
+
     }
 }
