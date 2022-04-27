@@ -43,3 +43,5 @@ jobs:
 
       - name: UnitTest
         run: make test
+        env:
+          RPC_URL: ${{ secrets.RPC_URL }}

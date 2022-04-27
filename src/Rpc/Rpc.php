@@ -2,7 +2,11 @@
 
 namespace Rpc;
 
+use Codec\Base;
+use Codec\ScaleBytes;
+use Codec\Types\ScaleInstance;
 use Rpc\Substrate\Method;
+use WebSocket\ConnectionException;
 
 class Rpc
 {
@@ -19,26 +23,37 @@ class Rpc
 
 
     /**
+     * runtime metadata, init after Rpc instance init
+     *
+     * @var array
+     */
+    public array $metadata;
+
+    /**
+     * scale code instance
+     *
+     * @var ScaleInstance
+     */
+    public ScaleInstance $codec;
+
+    /**
      * Rpc client, allow websocket(wss/ws) or http(https/http)
      *
      * @param string $endpoint
      * @param array $header
+     * @throws ConnectionException
      */
     public function __construct (string $endpoint, array $header = [])
     {
-        $parse = parse_url($endpoint);
-        // check url protocol is websocket or http
-        if ($parse["scheme"] == "ws" || $parse["scheme"] == "wss") {
-            $this->client = new WSClient($endpoint, $header);
-        } elseif ($parse["scheme"] == "http" || $parse["scheme"] == "https") {
-            $this->client = new HttpClient($endpoint, $header);
+        $this->client = SubstrateRpc::setClient($endpoint, $header);
+        $m = new Method($this->client);
+        $this->methods = $m->methods()["result"]["methods"];
+        $metadataRaw = $m->getMetadata();
+        if (empty($metadataRaw)) {
+            throw new ConnectionException("state_getMetadata get error, please retry");
         }
-        if (!isset($this->client)) {
-            throw new \InvalidArgumentException("please provider http/ws endpoint");
-        }
-        $m = new Method($this->client, "rpc");
-        $methods = $m->methods();
-        $this->methods = $methods["result"]["methods"];
+        $this->codec = new ScaleInstance(Base::create());
+        $this->metadata = $this->codec->process("metadata", new ScaleBytes($metadataRaw))["metadata"];
     }
 
 

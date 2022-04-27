@@ -3,6 +3,8 @@
 namespace Rpc\Test;
 
 
+use Rpc\KeyPair\KeyPair;
+use Rpc\Util;
 use Rpc\WSClient;
 use Rpc\HttpClient;
 use Rpc\SubstrateRpc;
@@ -11,6 +13,10 @@ use WebSocket\ConnectionException;
 
 final class ClientTest extends TestCase
 {
+
+    public string $Alice = "0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a";
+
+
     public function testWsClientShouldReceiveData ()
     {
         // allow custom headers
@@ -67,14 +73,32 @@ final class ClientTest extends TestCase
         $header = $wsClient->rpc->chain->getBlock("0x3ef1a34520b3c00d3b32b86760f0bbcfc6c2fa89d65a27c48929287ae202462c")["result"]["block"]["header"];
         $this->assertEquals("0xa59b46", $header["number"]);
         // chain_getBlockHash with param blockNumber
-        $blockHash = $wsClient->rpc->chain->getBlockHash("0xf4240")["result"];
+        $blockHash = $wsClient->rpc->chain->getBlockHash("0xf4240");
         $this->assertEquals("0xb267ffd706bbb93779eab04f47c7038031657b0a863794dbdd73170e3976c3e7", $blockHash);
+
+        $this->assertEquals("0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe", $wsClient->rpc->chain->getBlockHash("0x0"));
+        $this->assertEquals(0, $wsClient->rpc->system->accountNextIndex("HLgKKHcwDtvdxJWQUttnt5PrzwqUsEXBAshetVt97miXsen"));
+        $this->assertEquals("kusama", $wsClient->rpc->state->getRuntimeVersion()["specName"]);
 
         // state_call with no params will raise error
         $this->expectException(\InvalidArgumentException::class);
         $wsClient->rpc->state->call();
 
         // close ws client connection
+        $wsClient->close();
+    }
+
+    /**
+     * @throws \SodiumException
+     * @throws ConnectionException
+     */
+    public function testSendTransaction ()
+    {
+        $endpoint = getenv("RPC_URL") == "" ? "ws://127.0.0.1:9944" : getenv("RPC_URL");
+        $wsClient = new SubstrateRpc($endpoint);
+        $wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->Alice, $wsClient->hasher));
+        $result = $wsClient->tx->Balances->transfer(["Id" => "8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"], 12345);
+        $this->assertEquals(64, strlen(Util::trimHex($result["result"])));
         $wsClient->close();
     }
 }
