@@ -39,6 +39,17 @@ class Tx
     public Rpc $rpc;
 
 
+    /**
+     * For transaction option, it can be set tips or Era
+     * default era is immortal, tip is 0
+     *
+     * @var array
+     */
+    protected array $options = [
+        "tip" => 0,
+        "era" => "00"
+    ];
+
     public function __construct (Rpc $rpc)
     {
         $this->codec = $rpc->codec;
@@ -58,7 +69,7 @@ class Tx
         if (!isset($this->keyPair)) {
             throw new \InvalidArgumentException("singer keypair not set");
         }
-        return new Pallet($this->rpc, $pallet, $this->keyPair);
+        return new Pallet($this->rpc, $pallet, $this->keyPair, $this->options);
     }
 
 
@@ -71,4 +82,22 @@ class Tx
     {
         $this->keyPair = $keyPair;
     }
+
+    /**
+     * set tx with opt, return tx instance
+     *
+     * @param array $opt
+     * @return Tx
+     */
+    public function withOpt (array $opt): Tx
+    {
+        if (array_key_exists("tip", $opt)) {
+            $this->options["tip"] = $opt["tip"];
+        }
+        if (array_key_exists("era", $opt)) {
+            $this->options["era"] = $opt["era"];
+        }
+        return $this;
+    }
+
 }

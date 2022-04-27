@@ -31,17 +31,28 @@ class Pallet
      */
     private KeyPair $keyPair;
 
+
+    /**
+     * For transaction option, it can be set tips or Era
+     * default era is immortal, tip is 0
+     *
+     * @var array
+     */
+    protected array $options;
+
     /**
      *
      * @param Rpc $rpc
      * @param string $pallet
      * @param KeyPair $keyPair
+     * @param array $opt
      */
-    public function __construct (Rpc $rpc, string $pallet, keyPair $keyPair)
+    public function __construct (Rpc $rpc, string $pallet, keyPair $keyPair, array $opt = [])
     {
         $this->rpc = $rpc;
         $this->pallet = $pallet;
         $this->keyPair = $keyPair;
+        $this->options = $opt;
     }
 
     /**
@@ -49,7 +60,7 @@ class Pallet
      * @param array $attributes
      *
      * @return void
-     * @throws \InvalidArgumentException
+     * @throws \InvalidArgumentException|\SodiumException
      */
     public function __call (string $call, array $attributes)
     {
@@ -68,7 +79,7 @@ class Pallet
      */
     public function submitAndWatchExtrinsic (string $signature): mixed
     {
-        return $this->rpc->author->submitAndWatchExtrinsic($signature);
+        return $this->rpc->author->submitExtrinsic($signature);
     }
 
 
@@ -80,30 +91,33 @@ class Pallet
      *
      * @param array $call
      * @return string
+     * @throws \SodiumException
      */
     public function signAndBuildExtrinsic (array $call): string
     {
         $encodeCall = $this->rpc->codec->createTypeByTypeString("Call")->setMetadata($this->rpc->metadata)->encode($call);
         $genesisHash = $this->rpc->chain->getBlockHash("0x0"); // chain_getBlockHash
+
+        // build ExtrinsicOption
         $opt = new ExtrinsicOption($genesisHash);
-        $opt->era = "00"; // Era  MortalEra
+        $opt->era = $this->options["era"]; // Era  MortalEra
         $opt->nonce = $this->rpc->system->accountNextIndex(ss58::encode($this->keyPair->pk, 42)); // nonce system_accountNextIndex
         $runtimeVersion = $this->rpc->state->getRuntimeVersion();
         $opt->specVersion = $runtimeVersion["specVersion"]; // spec version state_getRuntimeVersion
-        $opt->tip = "0"; //
-        $opt->transactionVersion = $runtimeVersion["transactionVersion"]; // TransactionVersion
+        $opt->tip = $this->options["tip"]; //
+        $opt->transactionVersion = 0; // TransactionVersion
 
+        // sign ExtrinsicPayload
         $payload = new ExtrinsicPayload($opt, $encodeCall);
         $signature = $payload->sign($this->keyPair, $payload->encode($this->rpc->codec));
 
         $extrinsic = [
-            "extrinsic_length" => 145,
             'version' => '84',
             "account_id" => ["Id" => $this->keyPair->pk],
             "signature" => [$this->keyPair->type => $signature],
             "era" => $opt->era,
             "nonce" => $opt->nonce,
-            "tip" => $opt->nonce,
+            "tip" => $opt->tip,
             'module_id' => $call["module_id"],
             'call_name' => $call["call_name"],
             'params' => $call["params"]
@@ -111,3 +125,4 @@ class Pallet
         return $this->rpc->codec->createTypeByTypeString("Extrinsic")->setMetadata($this->rpc->metadata)->encode($extrinsic);
     }
 }
+

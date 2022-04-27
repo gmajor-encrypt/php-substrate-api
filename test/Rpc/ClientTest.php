@@ -4,6 +4,7 @@ namespace Rpc\Test;
 
 
 use Rpc\KeyPair\KeyPair;
+use Rpc\Util;
 use Rpc\WSClient;
 use Rpc\HttpClient;
 use Rpc\SubstrateRpc;
@@ -12,6 +13,10 @@ use WebSocket\ConnectionException;
 
 final class ClientTest extends TestCase
 {
+
+    public string $Alice = "0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a";
+
+
     public function testWsClientShouldReceiveData ()
     {
         // allow custom headers
@@ -85,14 +90,15 @@ final class ClientTest extends TestCase
 
     /**
      * @throws \SodiumException
+     * @throws ConnectionException
      */
     public function testSendTransaction ()
     {
-        $wsClient = new SubstrateRpc("wss://kusama-rpc.polkadot.io/");
-
-        $wsClient->setSigner(KeyPair::initKeyPair("sr25519", "", $wsClient->hasher));
-
+        $endpoint = getenv("RPC_URL") == "" ? "ws://127.0.0.1:9944" : getenv("RPC_URL");
+        $wsClient = new SubstrateRpc($endpoint);
+        $wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->Alice, $wsClient->hasher));
+        $result = $wsClient->tx->Balances->transfer(["Id" => "8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"], 12345);
+        $this->assertEquals(64, strlen(Util::trimHex($result["result"])));
         $wsClient->close();
-
     }
 }

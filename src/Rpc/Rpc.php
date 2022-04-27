@@ -53,7 +53,7 @@ class Rpc
             throw new ConnectionException("state_getMetadata get error, please retry");
         }
         $this->codec = new ScaleInstance(Base::create());
-        $this->metadata = $this->codec->process("metadata", new ScaleBytes($metadataRaw));
+        $this->metadata = $this->codec->process("metadata", new ScaleBytes($metadataRaw))["metadata"];
     }
 
 

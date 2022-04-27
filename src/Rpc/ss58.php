@@ -4,7 +4,6 @@ namespace Rpc;
 
 use Tuupola\Base58;
 use Codec\Utils;
-//use Tuupola\Base58Proxy as Base58;
 class ss58
 {
     /**
@@ -44,8 +43,6 @@ class ss58
         $checkSum = Utils::hexToBytes(sodium_bin2hex(sodium_crypto_generichash(hex2bin((Utils::bytesToHex(array_merge($prefix, $addressFormat)))), '', 64)));
 
         $bitcoin = new Base58(["characters" => Base58::BITCOIN]);
-
-        print_r(Utils::bytesToHex(array_merge($addressFormat, array_slice($checkSum, 0, $checkSumLength))));
 
         return $bitcoin->encode(hex2bin(Utils::bytesToHex(array_merge($addressFormat, array_slice($checkSum, 0, $checkSumLength)))));
     }

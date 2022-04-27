@@ -2,7 +2,9 @@
 
 namespace Rpc\Pallet;
 
+use Codec\Types\ScaleInstance;
 use Rpc\KeyPair\KeyPair;
+use Rpc\Util;
 
 class ExtrinsicPayload
 {
@@ -15,18 +17,11 @@ class ExtrinsicPayload
     public string $call;
 
     /**
-     * Extrinsic signer
-     *
-     * @var string
-     */
-    public string $signer;
-
-    /**
      * extra CheckEra
      *
-     * @var array
+     * @var array|string
      */
-    public array $era;
+    public array|string $era;
 
     /**
      * extra CheckNonce Compact<u32>
@@ -107,20 +102,24 @@ class ExtrinsicPayload
      */
     public function sign (keyPair $keyPair, string $encodePayload): string
     {
-        return $keyPair->sign($encodePayload);
+        return $keyPair->sign(Util::addHex($encodePayload));
     }
 
     /**
      * Extrinsic encode
      *
-     * @param $codec
+     * @param ScaleInstance $codec
      * @return string
      */
-    public function encode ($codec): string
+    public function encode (ScaleInstance $codec): string
     {
-        return "";
+
+        $value = $this->call;
+        $value = $value . $codec->createTypeByTypeString("EraExtrinsic")->encode($this->era);
+        $value = $value . $codec->createTypeByTypeString("Compact<U64>")->encode($this->nonce);
+        $value = $value . $codec->createTypeByTypeString("Compact<Balance>")->encode($this->tip);
+        $value = $value . $codec->createTypeByTypeString("U64")->encode($this->specVersion);
+        $value = $value . $codec->createTypeByTypeString("Hash")->encode($this->genesisHash);
+        return $value. $codec->createTypeByTypeString("Hash")->encode($this->blockHash);
     }
-
-
 }
-
