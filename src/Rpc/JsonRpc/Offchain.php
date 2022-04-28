@@ -2,7 +2,7 @@
 
 namespace Rpc\JsonRpc;
 
-class Offchain extends base implements IOffchain
+class Offchain extends Base implements IOffchain
 {
 
     /**

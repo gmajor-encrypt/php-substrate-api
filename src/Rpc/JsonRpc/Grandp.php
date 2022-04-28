@@ -6,7 +6,7 @@ namespace Rpc\JsonRpc;
 
 use Rpc\Util;
 
-class Grandp extends base implements IGrandpa
+class Grandp extends Base implements IGrandpa
 {
 
     /**

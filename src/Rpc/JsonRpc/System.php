@@ -2,7 +2,7 @@
 
 namespace Rpc\JsonRpc;
 
-class System extends base implements ISystem
+class System extends Base implements ISystem
 {
 
 

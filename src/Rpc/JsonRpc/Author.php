@@ -2,7 +2,7 @@
 
 namespace Rpc\JsonRpc;
 
-class Author extends base implements IAuthor
+class Author extends Base implements IAuthor
 {
 
     /**

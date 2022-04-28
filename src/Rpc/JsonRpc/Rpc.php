@@ -2,7 +2,7 @@
 
 namespace Rpc\JsonRpc;
 
-class Rpc extends base implements IRpc
+class Rpc extends Base implements IRpc
 {
 
     /**

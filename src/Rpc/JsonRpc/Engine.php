@@ -2,7 +2,7 @@
 
 namespace Rpc\JsonRpc;
 
-class Engine extends base implements IEngine
+class Engine extends Base implements IEngine
 {
 
     /**

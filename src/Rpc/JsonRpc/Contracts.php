@@ -2,7 +2,7 @@
 
 namespace Rpc\JsonRpc;
 
-class Contracts extends base implements IContracts
+class Contracts extends Base implements IContracts
 {
 
     /**

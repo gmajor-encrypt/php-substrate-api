@@ -2,7 +2,7 @@
 
 namespace Rpc\JsonRpc;
 
-class SyncState extends base implements ISyncState
+class SyncState extends Base implements ISyncState
 {
 
 

@@ -2,7 +2,7 @@
 
 namespace Rpc\JsonRpc;
 
-class Payment extends base implements IPayment
+class Payment extends Base implements IPayment
 {
 
     /**

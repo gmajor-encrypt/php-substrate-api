@@ -2,7 +2,7 @@
 
 namespace Rpc\JsonRpc;
 
-class State extends base implements IState
+class State extends Base implements IState
 {
 
 

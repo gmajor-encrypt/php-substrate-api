@@ -2,7 +2,7 @@
 
 namespace Rpc\JsonRpc;
 
-class Mmr extends base implements IMmr
+class Mmr extends Base implements IMmr
 {
     /**
      * Generate MMR proof for given leaf index.

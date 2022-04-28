@@ -2,7 +2,7 @@
 
 namespace Rpc\JsonRpc;
 
-class Dev extends base implements IDev
+class Dev extends Base implements IDev
 {
 
     /**

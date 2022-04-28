@@ -2,7 +2,7 @@
 
 namespace Rpc\JsonRpc;
 
-class ChildState extends base implements IChildState
+class ChildState extends Base implements IChildState
 {
 
     /**

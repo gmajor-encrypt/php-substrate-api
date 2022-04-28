@@ -2,7 +2,7 @@
 
 namespace Rpc\JsonRpc;
 
-class Babe extends base implements IBabe
+class Babe extends Base implements IBabe
 {
 
     /**
