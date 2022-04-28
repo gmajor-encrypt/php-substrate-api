@@ -96,7 +96,7 @@ class Pallet
     public function signAndBuildExtrinsic (array $call): string
     {
         $encodeCall = $this->rpc->codec->createTypeByTypeString("Call")->setMetadata($this->rpc->metadata)->encode($call);
-        $genesisHash = $this->rpc->chain->getBlockHash("0x0"); // chain_getBlockHash
+        $genesisHash = $this->rpc->chain->getBlockHash(0); // chain_getBlockHash
 
         // build ExtrinsicOption
         $opt = new ExtrinsicOption($genesisHash);

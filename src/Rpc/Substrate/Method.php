@@ -64,41 +64,6 @@ class Method
     }
 
     /**
-     * getBlockHash
-     *
-     * @return string blockNum hex
-     */
-    public function getBlockHash (string $blockNum): string
-    {
-        $res = $this->client->read("chain_getBlockHash", [$blockNum]);
-        return $res["result"];
-    }
-
-    /**
-     * accountNextIndex
-     *
-     * @param string $accountId
-     * @return int
-     */
-    public function accountNextIndex (string $accountId): int
-    {
-        $res = $this->client->read("system_accountNextIndex", [$accountId]);
-        return $res["result"];
-    }
-
-    /**
-     * getRuntimeVersion
-     *
-     * @return array
-     */
-    public function getRuntimeVersion (): array
-    {
-        $res = $this->client->read("state_getRuntimeVersion", []);
-        return $res["result"];
-    }
-
-
-    /**
      * @param string $call
      * @param array $attributes
      *
@@ -108,10 +73,6 @@ class Method
     public function __call (string $call, array $attributes)
     {
         $method = sprintf("%s_%s", $this->pallet, $call);
-        $res = $this->client->read($method, $attributes);
-        if (array_key_exists("error", $res)) {
-            throw new InvalidArgumentException(sprintf("Read rpc get error %s", $res["error"]["message"]));
-        }
-        return $res;
+        return $this->client->read($method, $attributes);
     }
 }

@@ -3,7 +3,6 @@
 ---
 PHP Substrate RPC Api
 
-
 ## Requirement
 
 php >=8.0 (install ffi https://www.php.net/manual/en/intro.ffi.php)
@@ -25,7 +24,6 @@ Codec supports `PSR-4` autoloaders.
 # When installed via composer
 require_once 'vendor/autoload.php';
 ```
-
 
 ### RPC
 
@@ -85,10 +83,11 @@ $hasher->ByHasherName("Twox64Concat", "0xad2ecd66275a1ded")
 $hasher->ByHasherName("Blake2_128Concat", "20be")
 ````
 
-
 * Storage key
 
-When you need accessing storage using Substrate RPC(like rpc [state_getStorage](https://polkadot.js.org/docs/substrate/rpc#getstoragechildkey-prefixedstoragekey-key-storagekey-at-hash-optionstoragedata), you need to provide the key associated with the item,
+When you access storage using Substrate RPC(like
+rpc [state_getStorage](https://polkadot.js.org/docs/substrate/rpc#getstoragechildkey-prefixedstoragekey-key-storagekey-at-hash-optionstoragedata)
+, you need to provide the key associated with the item,
 
 ```php
 <?php
@@ -109,6 +108,20 @@ print_r(StorageKey::encode("System", "Account", $metadata, ["0x1c79a5ada2ff0d55a
 
 ```
 
+* send extrinsics
+
+```php
+<?php
+use Rpc\KeyPair\KeyPair;
+use Rpc\SubstrateRpc;
+$AliceSeed = "0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a";
+$BobId = ["Id" => "8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"];
+$wsClient = new SubstrateRpc($endpoint);
+$wsClient->setSigner(KeyPair::initKeyPair("sr25519", $AliceSeed, $wsClient->hasher));
+$result = $wsClient->tx->Balances->transfer($BobId, 12345);
+var_dump($result); // transaction hash
+$wsClient->close()
+````
 
 ### Example
 
@@ -124,12 +137,12 @@ make test
 
 ### FFI error FFI\Exception: Failed loading '../php-substrate-api/vendor/gmajor/sr25519-bindings/src/Crypto/sr25519.so'
 
-The current default sr25519-bindings FFI is for mac.  Unfortunately, php composer currently does not support automatic compilation after install, 
-so manual compilation is required. You can run this script
+The current default sr25519-bindings FFI is for mac. Unfortunately, php composer currently does not support automatic
+compilation after install, so manual compilation is required. You can run this script
+
 ```bash
 cd vendor/gmajor/sr25519-bindings/go && go build -buildmode=c-shared -o ../src/Crypto/sr25519.so .
 ```
-
 
 ## Resources
 
@@ -137,7 +150,6 @@ cd vendor/gmajor/sr25519-bindings/go && go build -buildmode=c-shared -o ../src/C
 - [Polkadot.js](http://polkadot.js.org/)
 - [substrate.dev](https://docs.substrate.io/v3/runtime/custom-rpcs/)
 - [substrate-api-sidecar](https://github.com/paritytech/substrate-api-sidecar)
-
 
 ## License
 

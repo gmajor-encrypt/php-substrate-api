@@ -2,6 +2,7 @@
 
 namespace Rpc;
 
+use InvalidArgumentException;
 use WebSocket\BadOpcodeException;
 use WebSocket\Client as WS;
 use Rpc\Substrate\Json2;
@@ -39,7 +40,7 @@ class WSClient extends Client
     public function __construct (string $endpoint, array $header = [])
     {
         if (!str_starts_with($endpoint, 'ws://') && !str_starts_with($endpoint, 'wss://')) {
-            throw new \InvalidArgumentException(sprintf("invalid protocol %s, only support ws or wss protocol", $endpoint));
+            throw new InvalidArgumentException(sprintf("invalid protocol %s, only support ws or wss protocol", $endpoint));
         }
 
         $this->client = new WS($endpoint, ["timeout" => 60, "fragment_size" => 1024 * 100, "headers" => $header]);
@@ -62,7 +63,11 @@ class WSClient extends Client
             throw new ConnectionException("this connection has been closed");
         }
         $this->client->send(json_encode(Json2::build($method, $params)));
-        return json_decode($this->client->receive(), true);
+        $res = json_decode($this->client->receive(), true);
+        if (array_key_exists("error", $res)) {
+            throw new InvalidArgumentException(sprintf("Read rpc get error %s", $res["error"]["message"]));
+        }
+        return $res;
     }
 
     /**

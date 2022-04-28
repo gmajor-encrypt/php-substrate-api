@@ -22,7 +22,7 @@ class Json2
             "id" => self::getLastId(),
             "jsonrpc" => "2.0",
             "method" => $method,
-            "params" => $params
+            "params" => array_filter($params)
         ];
     }
 
