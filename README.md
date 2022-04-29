@@ -56,8 +56,6 @@ $client->rpc->chain->getFinalizedHead();
 $client->close(); // do not forget close websocket connection !
 ```
 
-More detailed RPC documentation can be found at https://polkadot.js.org/docs/substrate/rpc
-
 * Hasher
 
 We currently support 6 hash methods, including Blake2_128，Blake2_256，Twox128，Twox256，Twox64Concat，Blake2_128Concat。
@@ -108,7 +106,23 @@ print_r(StorageKey::encode("System", "Account", $metadata, ["0x1c79a5ada2ff0d55a
 
 ```
 
-* send extrinsics
+* Json RPC
+
+RPC methods that are Remote Calls available by default and allow you to interact with the actual node, query, and
+submit.
+
+```php
+// On the api, these are exposed via <client>.rpc.<module>.<method>, like this 
+$client->rpc->system->health(); // for rpc system_health
+$client->rpc->author->rotateKeys(); // for rpc author_rotateKeys
+$client->rpc->state->getMetadata("hash"); // for rpc state_getMetadata
+```
+
+All rpc interface has been declare at https://github.com/gmajor-encrypt/php-substrate-api/tree/master/src/Rpc/JsonRpc
+
+More detailed RPC documentation can be found at https://polkadot.js.org/docs/substrate/rpc
+
+* Send extrinsics
 
 ```php
 <?php
@@ -122,6 +136,23 @@ $result = $wsClient->tx->Balances->transfer($BobId, 12345);
 var_dump($result); // transaction hash
 $wsClient->close()
 ````
+
+* Keyring
+
+
+The Keyring allows you to perform operations on these keys (such as sign/verify) and never exposes the secretKey
+
+to the outside world. Support ed25519(Edwards https://ed25519.cr.yp.to/) or sr25519(schnorrkel https://github.com/w3f/schnorrkel)
+
+```php
+<?php
+use Rpc\KeyPair\KeyPair;
+$keyPair = KeyPair::initKeyPair("sr25519|ed25519", {$secretKey}, new Hasher());
+// signed msg
+$signature = $keyPair->sign("msg");
+// verify this message
+$keyPair->verify($signature, "123");
+```
 
 ### Example
 

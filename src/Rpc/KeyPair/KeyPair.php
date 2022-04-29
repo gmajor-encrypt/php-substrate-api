@@ -34,6 +34,18 @@ class KeyPair
 
 
     /**
+     * verify a signed msg
+     *
+     * @param string $signature
+     * @param string $msg
+     * @return bool
+     */
+    public function verify (string $signature,string $msg): bool
+    {
+        return $this->pair->verify($signature,$msg);
+    }
+
+    /**
      * init key pair
      *
      * @param string $type t is a type, it can be ed25519 or sr25519

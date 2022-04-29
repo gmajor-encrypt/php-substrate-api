@@ -4,6 +4,7 @@ namespace Rpc\Test;
 
 use Rpc\Hasher\Hasher;
 use PHPUnit\Framework\TestCase;
+use Rpc\KeyPair\KeyPair;
 
 final class HashTest extends TestCase
 {
@@ -58,7 +59,7 @@ final class HashTest extends TestCase
     /**
      * @throws \SodiumException
      */
-    public function TestEd25519 ()
+    public function testEd25519 ()
     {
         $pair = sodium_crypto_sign_keypair();
         $publicKey = sodium_crypto_sign_publickey($pair);
@@ -66,6 +67,34 @@ final class HashTest extends TestCase
         $this->assertEquals(substr(sodium_bin2hex($secretKey), 64), sodium_bin2hex($publicKey));
         $pair2 = sodium_crypto_sign_seed_keypair(sodium_hex2bin(substr(sodium_bin2hex($secretKey), 0, 64)));
         $this->assertEquals(sodium_bin2hex($publicKey), sodium_bin2hex(sodium_crypto_sign_publickey($pair2)));
+        // sign and verfiy
+        $this->assertEquals(true, sodium_crypto_sign_verify_detached(sodium_crypto_sign_detached("1", $secretKey), "1", $publicKey));
+        $this->assertEquals(true, sodium_crypto_sign_verify_detached(sodium_crypto_sign_detached("0xf12", $secretKey), "0xf12", $publicKey));
+        $this->assertEquals(false, sodium_crypto_sign_verify_detached(sodium_crypto_sign_detached("fffffff", $secretKey), "fffff", $publicKey));
     }
 
+    public function testKeyring ()
+    {
+        $hasher = new Hasher();
+        // sr25519
+        $sr = KeyPair::initKeyPair("sr25519", "0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a", $hasher);
+        $this->assertEquals($sr->type, "Sr25519");
+        $this->assertEquals($sr->pk, "d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d");
+        $this->assertEquals(true, $sr->verify($sr->sign("1234567"), "1234567"));
+        $this->assertEquals(false, $sr->verify($sr->sign("0xffffffffff"), "1234567"));
+
+        // ed25519
+        $pair = sodium_crypto_sign_keypair();
+        $secretKey = sodium_crypto_sign_secretkey($pair);
+        $ed = KeyPair::initKeyPair("ed25519", sodium_bin2hex($secretKey), $hasher);
+        $this->assertEquals($ed->type, "Ed25519");
+        $this->assertEquals($ed->pk, substr(sodium_bin2hex($secretKey), 64));
+        $this->assertEquals(true, sodium_crypto_sign_verify_detached(sodium_hex2bin($ed->sign("1")), "1", sodium_crypto_sign_publickey($pair)));
+        $this->assertEquals(true, $ed->verify($ed->sign("123"), "123"));
+        $this->assertEquals(false, $ed->verify($ed->sign("0xffffffffff"), "1234567"));
+
+        // unknown type Ecdsa
+        $this->expectException(\InvalidArgumentException::class);
+        KeyPair::initKeyPair("Ecdsa", "0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a", $hasher);
+    }
 }

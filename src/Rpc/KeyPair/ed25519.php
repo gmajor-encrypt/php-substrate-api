@@ -20,6 +20,7 @@ class ed25519 implements IKeyPair
     private string $sk;
 
     /**
+     * ed25519 keypair
      *
      * @var string
      */
@@ -28,10 +29,10 @@ class ed25519 implements IKeyPair
     /**
      * @throws \SodiumException
      */
-    public function __construct (string $sk)
+    public function __construct (string $secretKey)
     {
-        $this->sk = $sk;
-        $this->keyPair = sodium_crypto_sign_seed_keypair(sodium_hex2bin($sk));
+        $this->sk = $secretKey;
+        $this->keyPair = sodium_crypto_sign_seed_keypair(sodium_hex2bin(substr($secretKey, 0, 64)));
         $this->pk = sodium_bin2hex(sodium_crypto_sign_publickey($this->keyPair));
     }
 
@@ -44,11 +45,12 @@ class ed25519 implements IKeyPair
      */
     public function sign (string $msg): string
     {
-        return sodium_crypto_sign_detached($msg, $this->sk);
+        return sodium_bin2hex(sodium_crypto_sign_detached($msg, sodium_hex2bin($this->sk)));
     }
 
     /**
      * sr25519
+     *
      * @return string
      */
     public function type (): string
@@ -58,10 +60,24 @@ class ed25519 implements IKeyPair
 
     /**
      * public key
+     *
      * @return string
      */
     public function pk (): string
     {
         return $this->pk;
+    }
+
+    /**
+     * verify signed msg
+     *
+     * @param string $signature
+     * @param string $msg
+     * @return bool
+     * @throws \SodiumException
+     */
+    public function verify (string $signature, string $msg): bool
+    {
+        return sodium_crypto_sign_verify_detached(sodium_hex2bin($signature), $msg, sodium_hex2bin($this->pk));
     }
 }

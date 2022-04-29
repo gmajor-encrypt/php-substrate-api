@@ -16,12 +16,10 @@ class sr25519 implements IKeyPair
     public string $pk;
 
     /**
-     * secret key
+     * Hasher instance
      *
-     * @var string
+     * @var Hasher
      */
-    private string $sk;
-
     public Hasher $hasher;
 
     /**
@@ -32,7 +30,6 @@ class sr25519 implements IKeyPair
 
     public function __construct (string $sk, Hasher $hasher)
     {
-        $this->sk = $sk;
         $this->hasher = $hasher;
         $this->keyPair = $hasher->sr->InitKeyPair($sk);
         $this->pk = $this->keyPair->publicKey;
@@ -52,6 +49,7 @@ class sr25519 implements IKeyPair
 
     /**
      * sr25519
+     *
      * @return string
      */
     public function type (): string
@@ -61,10 +59,23 @@ class sr25519 implements IKeyPair
 
     /**
      * public key
+     *
      * @return string
      */
     public function pk (): string
     {
         return $this->pk;
+    }
+
+    /**
+     * verify signed msg
+     *
+     * @param string $signature
+     * @param string $msg
+     * @return bool
+     */
+    public function verify (string $signature, string $msg): bool
+    {
+        return $this->hasher->sr->VerifySign($this->keyPair, $msg, $signature);
     }
 }
