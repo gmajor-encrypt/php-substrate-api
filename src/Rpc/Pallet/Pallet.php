@@ -105,7 +105,7 @@ class Pallet
         $runtimeVersion = $this->rpc->state->getRuntimeVersion();
         $opt->specVersion = $runtimeVersion["specVersion"]; // spec version state_getRuntimeVersion
         $opt->tip = $this->options["tip"]; //
-        $opt->transactionVersion = 0; // TransactionVersion
+        $opt->transactionVersion = $runtimeVersion["transactionVersion"]; // TransactionVersion
 
         // sign ExtrinsicPayload
         $payload = new ExtrinsicPayload($opt, $encodeCall);
