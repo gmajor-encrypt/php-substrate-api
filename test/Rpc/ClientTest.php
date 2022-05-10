@@ -97,6 +97,7 @@ final class ClientTest extends TestCase
      */
     public function testSendTransaction ()
     {
+        // Alice send transfer 12345 token to Bob
         $endpoint = getenv("RPC_URL") == "" ? "ws://127.0.0.1:9944" : getenv("RPC_URL");
         $wsClient = new SubstrateRpc($endpoint);
         $wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $wsClient->hasher));

@@ -9,8 +9,16 @@ class KeyPair
 {
     private IKeyPair $pair;
 
+    /**
+     * keyPair type
+     * @var string
+     */
     public string $type;
 
+    /**
+     * public key
+     * @var string
+     */
     public string $pk;
 
     public function __construct (IKeyPair $pair)
@@ -46,7 +54,7 @@ class KeyPair
     }
 
     /**
-     * init key pair
+     * init key pair, will support ed25519 or sr25519
      *
      * @param string $type t is a type, it can be ed25519 or sr25519
      * @param string $sk

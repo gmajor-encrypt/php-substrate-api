@@ -48,7 +48,7 @@ class sr25519 implements IKeyPair
 
 
     /**
-     * sr25519
+     * sr25519 type name
      *
      * @return string
      */

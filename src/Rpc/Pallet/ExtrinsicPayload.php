@@ -106,15 +106,14 @@ class ExtrinsicPayload
     }
 
     /**
-     * Extrinsic encode
+     * ExtrinsicPayload encode
      *
      * @param ScaleInstance $codec
      * @return string
      */
     public function encode (ScaleInstance $codec): string
     {
-
-        $value = $this->call;
+        $value = $this->call; // call code
         $value = $value . $codec->createTypeByTypeString("EraExtrinsic")->encode($this->era);
         $value = $value . $codec->createTypeByTypeString("Compact<U64>")->encode($this->nonce);
         $value = $value . $codec->createTypeByTypeString("Compact<Balance>")->encode($this->tip);

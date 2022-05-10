@@ -6,6 +6,10 @@ use Codec\Types\ScaleInstance;
 use Rpc\KeyPair\KeyPair;
 use Rpc\Pallet\Pallet;
 
+/**
+ * Tx package
+ * this package used by send transaction
+ */
 class Tx
 {
 
@@ -85,6 +89,8 @@ class Tx
 
     /**
      * set tx with opt, return tx instance
+     * option support tip and era
+     * Tips are an optional transaction fee that users can add
      *
      * @param array $opt
      * @return Tx
@@ -99,5 +105,4 @@ class Tx
         }
         return $this;
     }
-
 }

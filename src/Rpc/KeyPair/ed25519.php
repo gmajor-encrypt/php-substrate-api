@@ -49,7 +49,7 @@ class ed25519 implements IKeyPair
     }
 
     /**
-     * sr25519
+     * return Ed25519 type
      *
      * @return string
      */

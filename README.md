@@ -124,6 +124,8 @@ More detailed RPC documentation can be found at https://polkadot.js.org/docs/sub
 
 * Send extrinsics
 
+Below is a simple example of sending a token, you can use tx.<module>.<method> to send any transaction
+
 ```php
 <?php
 use Rpc\KeyPair\KeyPair;
@@ -174,6 +176,16 @@ compilation after install, so manual compilation is required. You can run this s
 ```bash
 cd vendor/gmajor/sr25519-bindings/go && go build -buildmode=c-shared -o ../src/Crypto/sr25519.so .
 ```
+### WebSocket\ConnectionException: Could not open socket to "127.0.0.1:9944"
+
+In the test,The keyPair used in the test process is //Alice, **ws://127.0.0.1:9944** is used by default as the node for testing SendTransaction.
+This node can start any private network settings by itself.
+You can also set the node address through environment variables.
+```base
+export RPC_URL=ws://....
+```
+
+
 
 ## Resources
 

@@ -2,6 +2,10 @@
 
 namespace Rpc\Pallet;
 
+/**
+ * Extrinsic option
+ *
+ */
 class ExtrinsicOption
 {
 

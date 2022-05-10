@@ -111,6 +111,7 @@ class Pallet
         $payload = new ExtrinsicPayload($opt, $encodeCall);
         $signature = $payload->sign($this->keyPair, $payload->encode($this->rpc->codec));
 
+        // extrinsic build
         $extrinsic = [
             'version' => '84',
             "account_id" => ["Id" => $this->keyPair->pk],
@@ -122,6 +123,7 @@ class Pallet
             'call_name' => $call["call_name"],
             'params' => $call["params"]
         ];
+        // extrinsic encode
         return $this->rpc->codec->createTypeByTypeString("Extrinsic")->setMetadata($this->rpc->metadata)->encode($extrinsic);
     }
 }

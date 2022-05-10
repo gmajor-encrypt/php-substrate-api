@@ -64,6 +64,8 @@ class Method
     }
 
     /**
+     * magic call, if some pallet not defined, it will be auto build call like {$pallet}_{$call}
+     *
      * @param string $call
      * @param array $attributes
      *

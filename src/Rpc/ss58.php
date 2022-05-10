@@ -4,6 +4,14 @@ namespace Rpc;
 
 use Tuupola\Base58;
 use Codec\Utils;
+
+/**
+ *  SS58 Address Format
+ *  SS58 is a simple address format designed for Substrate based chains.
+ *  There's no problem with using other address formats for a chain, but this serves as a robust default.
+ *  It is heavily based on Bitcoin's Base-58-check format with a few alterations.
+ *  https://docs.substrate.io/v3/advanced/ss58/
+ */
 class ss58
 {
     /**

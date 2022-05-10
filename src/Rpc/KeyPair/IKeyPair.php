@@ -1,6 +1,10 @@
 <?php
 
 namespace Rpc\KeyPair;
+/**
+ * KeyPair interface
+ *
+ */
 interface IKeyPair
 {
     /**
