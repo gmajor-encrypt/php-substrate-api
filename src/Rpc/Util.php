@@ -51,8 +51,6 @@ class Util
      */
     public static function addHex (string $hexString): string
     {
-
-
         return str_starts_with($hexString, '0x') ? $hexString : '0x' . $hexString;
     }
 

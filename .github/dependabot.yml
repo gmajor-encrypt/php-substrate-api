@@ -1,0 +1,9 @@
+version: 2
+updates:
+  - package-ecosystem: 'composer'
+    directory: '/php-scale-codec'
+    schedule:
+      interval: 'daily'
+    target-branch: 'main'
+    allow:
+      - dependency-name: 'gmajor/substrate-codec-php'

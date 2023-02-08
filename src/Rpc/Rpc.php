@@ -43,7 +43,7 @@ class Rpc
     /**
      * @var IClient $client
      */
-    public IClient $client;
+    public IClient  $client;
 
     /**
      * @var array $methods

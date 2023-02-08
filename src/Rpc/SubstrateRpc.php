@@ -26,6 +26,8 @@ class SubstrateRpc
      */
     public Hasher $hasher;
 
+    public Contract $contract;
+
     /**
      * Rpc construct
      *
