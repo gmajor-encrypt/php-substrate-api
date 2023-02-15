@@ -6,7 +6,7 @@ class Convert
 {
 
     /**
-     * toLatest
+     * metadata ABI convert to Latest
      *
      * @param array $metadata
      * @return ContractMetadataV4
@@ -26,7 +26,7 @@ class Convert
         if (array_key_exists("V3", $metadata)) {
             return ContractMetadataV3::to_obj($metadata)->toV4();
         }
-        if (array_key_exists("V4", $metadata)) {
+        if (array_key_exists("version", $metadata) && $metadata["version"] == 4) {
             return ContractMetadataV4::to_obj($metadata);
         }
         throw new \InvalidArgumentException("Invalid ABI metadata version");

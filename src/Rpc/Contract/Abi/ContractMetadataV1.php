@@ -10,12 +10,12 @@ class ContractMetadataV1
 
     public static function to_obj (array $j): ContractMetadataV1
     {
-        if (!array_key_exists("types", $j) or !array_key_exists("spec", $j) or !array_key_exists("storage", $j)) {
+        if (!array_key_exists("V1", $j)) {
             throw new \InvalidArgumentException("Invalid contract v1 metadata");
         }
         $instance = new ContractMetadataV1;
-        $instance->types = $j["types"];
-        $instance->spec = $j["spec"];
+        $instance->types = $j["V1"]["types"];
+        $instance->spec = $j["V1"]["spec"];
         return $instance;
     }
 

@@ -2,9 +2,6 @@
 
 namespace Rpc\Contract\Abi;
 
-
-use JetBrains\PhpStorm\ArrayShape;
-
 class ContractMetadataV0
 {
 
@@ -17,6 +14,7 @@ class ContractMetadataV0
 
     /**
      * abi json to v0 metadata instance
+     *
      * @param array $j
      * @return ContractMetadataV0
      */
@@ -37,6 +35,7 @@ class ContractMetadataV0
 
     /**
      * To json array
+     *
      * @return array
      */
     public function as_json (): array
@@ -50,7 +49,8 @@ class ContractMetadataV0
 
     private function convertDef (array $def): array
     {
-        switch (array_key_first($def)) {
+        $key = array_key_first($def);
+        switch (ucfirst($key)) {
             case 'Array':
             case "BitSequence":
             case 'Primitive':
@@ -62,19 +62,17 @@ class ContractMetadataV0
                 $fields = array_map(function (array $value): array {
                     $value["typeName"] = $value["type"];
                     return $value;
-                }, $def["Composite"]["fields"]);
-                $def["Composite"]["fields"] = $fields;
+                }, $def[$key]["fields"]);
+                $def[$key]["fields"] = $fields;
                 return $def;
             case 'Phantom':
-                $def["Tuple"] = [];
+                $def[$key] = [];
                 return $def;
             case 'Variant':
-                $variants = array_map(function (int $index, array $value): array {
-                    $value["index"] = $index;
-                    return $value;
-                }, $def["Variant"]["variants"]);
-
-                $def["Variant"]["variants"] = $variants;
+                foreach ($def[$key]["variants"] as $index => $variant) {
+                    $variant["index"] = $index;
+                    $def[$key]["variants"][$index] = $variant;
+                }
                 break;
             default:
                 throw new \InvalidArgumentException("Invalid abi v0 def type");
@@ -110,9 +108,9 @@ class ContractMetadataV0
                 "id" => $k + 1,
                 "type" => [
                     "def" => self::convertDef($type["def"]),
-                    "params" => self::convertParams($type["params"]),
+                    "params" => array_key_exists("params", $type) ? self::convertParams($type["params"]) : [],
                     "docs" => [],
-                    "path" => $type["path"]
+                    "path" => array_key_exists("path", $type) ? $type["path"] : []
                 ]
             ];
 
