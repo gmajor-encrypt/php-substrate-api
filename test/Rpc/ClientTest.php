@@ -78,7 +78,6 @@ final class ClientTest extends TestCase
         // chain_getBlockHash with param blockNumber
         $blockHash = $wsClient->rpc->chain->getBlockHash(1000000);
         $this->assertEquals("0xb267ffd706bbb93779eab04f47c7038031657b0a863794dbdd73170e3976c3e7", $blockHash);
-
         $this->assertEquals("0xb0a8d493285c2df73290dfb7e61f870f17b41801197a149ca93654499ea3dafe", $wsClient->rpc->chain->getBlockHash(0));
         $this->assertEquals(0, $wsClient->rpc->system->accountNextIndex("HLgKKHcwDtvdxJWQUttnt5PrzwqUsEXBAshetVt97miXsen"));
         $this->assertEquals("kusama", $wsClient->rpc->state->getRuntimeVersion()["specName"]);

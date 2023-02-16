@@ -5,6 +5,7 @@ namespace Rpc\Pallet;
 use Rpc\KeyPair\KeyPair;
 use Rpc\Rpc;
 use Rpc\ss58;
+use Rpc\Util;
 
 class Pallet
 {
@@ -110,7 +111,6 @@ class Pallet
         // sign ExtrinsicPayload
         $payload = new ExtrinsicPayload($opt, $encodeCall);
         $signature = $payload->sign($this->keyPair, $payload->encode($this->rpc->codec));
-
         // extrinsic build
         $extrinsic = [
             'version' => '84',
@@ -124,7 +124,7 @@ class Pallet
             'params' => $call["params"]
         ];
         // extrinsic encode
-        return $this->rpc->codec->createTypeByTypeString("Extrinsic")->setMetadata($this->rpc->metadata)->encode($extrinsic);
+        $sign = Util::addHex($this->rpc->codec->createTypeByTypeString("Extrinsic")->setMetadata($this->rpc->metadata)->encode($extrinsic));
+        return $sign;
     }
 }
-

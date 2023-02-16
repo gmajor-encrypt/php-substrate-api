@@ -3,6 +3,8 @@
 namespace Rpc\Pallet;
 
 use Codec\Types\ScaleInstance;
+use Codec\Utils;
+use Rpc\Hasher\Hasher;
 use Rpc\KeyPair\KeyPair;
 use Rpc\Util;
 
@@ -110,15 +112,22 @@ class ExtrinsicPayload
      *
      * @param ScaleInstance $codec
      * @return string
+     * @throws \SodiumException
      */
     public function encode (ScaleInstance $codec): string
     {
         $value = $this->call; // call code
         $value = $value . $codec->createTypeByTypeString("EraExtrinsic")->encode($this->era);
-        $value = $value . $codec->createTypeByTypeString("Compact<U64>")->encode($this->nonce);
+        $value = $value . $codec->createTypeByTypeString("Compact<U32>")->encode($this->nonce);
         $value = $value . $codec->createTypeByTypeString("Compact<Balance>")->encode($this->tip);
-        $value = $value . $codec->createTypeByTypeString("U64")->encode($this->specVersion);
+        $value = $value . $codec->createTypeByTypeString("U32")->encode($this->specVersion);
+        $value = $value . $codec->createTypeByTypeString("U32")->encode($this->transactionVersion);
         $value = $value . $codec->createTypeByTypeString("Hash")->encode($this->genesisHash);
-        return $value. $codec->createTypeByTypeString("Hash")->encode($this->blockHash);
+        $value = $value . $codec->createTypeByTypeString("Hash")->encode($this->blockHash);
+        if (count(Utils::hexToBytes($value)) > 256) {
+            $hash = new Hasher();
+            return $hash->ByHasherName("Blake2_256", $value);
+        }
+        return $value;
     }
 }

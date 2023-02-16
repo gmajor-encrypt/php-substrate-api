@@ -10,9 +10,15 @@ use Rpc\Contract\Abi\ContractMetadataV1;
 use Rpc\Contract\Abi\ContractMetadataV2;
 use Rpc\Contract\Abi\ContractMetadataV3;
 use Rpc\Contract\Abi\ContractMetadataV4;
-
+use Rpc\KeyPair\KeyPair;
+use Rpc\SubstrateRpc;
+use Rpc\Util;
+use WebSocket\ConnectionException;
+require_once "const.php";
 final class ContractTest extends TestCase
 {
+    public string $AliceSeed = "0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a";
+
     public function testAbiMetadataV0Parse ()
     {
         $content = json_decode(file_get_contents(__DIR__ . '/ink/ink_v0.json'), true);
@@ -105,4 +111,18 @@ final class ContractTest extends TestCase
         $this->assertEquals(count($v4->types), count($v4->getRegisteredSiType()));
     }
 
+
+    /**
+     * @throws \SodiumException
+     * @throws ConnectionException
+     */
+    public function testDeployContract ()
+    {
+        $endpoint = getenv("RPC_URL") == "" ? "ws://127.0.0.1:9944" : getenv("RPC_URL");
+        $wsClient = new SubstrateRpc($endpoint);
+        $wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $wsClient->hasher));
+        $result = $wsClient->contract->new(Constant::$flipperCode,"0x9bae9d5e01",[]);
+        $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
+        $wsClient->close();
+    }
 }

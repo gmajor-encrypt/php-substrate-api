@@ -65,7 +65,7 @@ class WSClient extends Client
         $this->client->send(json_encode(Json2::build($method, $params)));
         $res = json_decode($this->client->receive(), true);
         if (array_key_exists("error", $res)) {
-            throw new InvalidArgumentException(sprintf("Read rpc get error %s", $res["error"]["message"]));
+            throw new InvalidArgumentException(sprintf("call rpc get error %s", $res["error"]["message"]));
         }
         return $res;
     }

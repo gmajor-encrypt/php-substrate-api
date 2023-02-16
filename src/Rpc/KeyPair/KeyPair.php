@@ -64,14 +64,11 @@ class KeyPair
      */
     public static function initKeyPair (string $type, string $sk, Hasher $hasher): KeyPair
     {
-        switch ($type) {
-            case "ed25519":
-                return new KeyPair(new ed25519($sk));
-            case "sr25519":
-                return new KeyPair(new sr25519($sk, $hasher));
-            default:
-                throw new \InvalidArgumentException("keyPair only support ed25519 or sr25519");
-        }
+        return match ($type) {
+            "ed25519" => new KeyPair(new ed25519($sk)),
+            "sr25519" => new KeyPair(new sr25519($sk, $hasher)),
+            default => throw new \InvalidArgumentException("keyPair only support ed25519 or sr25519"),
+        };
     }
 
 }
