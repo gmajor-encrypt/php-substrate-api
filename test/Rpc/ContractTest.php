@@ -5,6 +5,7 @@ namespace Rpc\Test;
 use Codec\Base;
 use Codec\Types\ScaleInstance;
 use PHPUnit\Framework\TestCase;
+use Rpc\Contract;
 use Rpc\Contract\Abi\ContractMetadataV0;
 use Rpc\Contract\Abi\ContractMetadataV1;
 use Rpc\Contract\Abi\ContractMetadataV2;
@@ -14,10 +15,14 @@ use Rpc\KeyPair\KeyPair;
 use Rpc\SubstrateRpc;
 use Rpc\Util;
 use WebSocket\ConnectionException;
+
 require_once "const.php";
+
 final class ContractTest extends TestCase
 {
     public string $AliceSeed = "0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a";
+
+    public string $flipperContract = "0x5087232e4cc344500ca789607e1083d5c075eda75d205fe007eff14629bd86ef";
 
     public function testAbiMetadataV0Parse ()
     {
@@ -121,8 +126,33 @@ final class ContractTest extends TestCase
         $endpoint = getenv("RPC_URL") == "" ? "ws://127.0.0.1:9944" : getenv("RPC_URL");
         $wsClient = new SubstrateRpc($endpoint);
         $wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $wsClient->hasher));
-        $result = $wsClient->contract->new(Constant::$flipperCode,"0x9bae9d5e01",[]);
+        $contract = new Contract($wsClient->tx);
+        $result = $contract->new(Constant::$flipperCode, "0x9bae9d5e01", []);
         $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
         $wsClient->close();
     }
+
+
+    /**
+     * @throws \SodiumException
+     * @throws ConnectionException
+     */
+    public function testContractCall ()
+    {
+        $endpoint = getenv("RPC_URL") == "" ? "ws://127.0.0.1:9944" : getenv("RPC_URL");
+        $wsClient = new SubstrateRpc($endpoint);
+        $wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $wsClient->hasher));
+        $v4 = ContractMetadataV4::to_obj(json_decode(file_get_contents(__DIR__ . '/ink/ink_v4.json'), true));
+        $v4->register_type($wsClient->tx->codec->getGenerator(), "testAbiMetadataV4Parse");
+        $contract = new Contract($wsClient->tx, $this->flipperContract, $v4);
+        var_dump($contract->get([]));
+
+        $wsClient->close();
+//        $result = $wsClient->contract->new(Constant::$flipperCode,"0x9bae9d5e01",[]);
+//        $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
+//
+    }
 }
+
+// 0x0000000001000000000000000000000000000000000001030806000000
+// 0x0000000001000000000000000000000000000000000001030806000000

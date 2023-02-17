@@ -105,4 +105,14 @@ class Tx
         }
         return $this;
     }
+
+    /**
+     * get key pair public key
+     *
+     * @return string
+     */
+    public function getKeyPairPk (): string
+    {
+        return $this->keyPair->pk;
+    }
 }

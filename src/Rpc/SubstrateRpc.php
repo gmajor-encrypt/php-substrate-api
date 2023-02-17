@@ -26,7 +26,6 @@ class SubstrateRpc
      */
     public Hasher $hasher;
 
-    public Contract $contract;
 
     /**
      * Rpc construct
@@ -40,7 +39,6 @@ class SubstrateRpc
         $this->rpc = new Rpc($endpoint, $header);
         $this->tx = new Tx($this->rpc);
         $this->hasher = new Hasher();
-        $this->contract = new Contract($this->tx);
     }
 
     /**

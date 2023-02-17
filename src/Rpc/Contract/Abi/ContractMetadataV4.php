@@ -28,6 +28,12 @@ class ContractMetadataV4 extends ContractMetadataV3
     }
 
 
+    public function is_empty (): bool
+    {
+        return count($this->types) == 0 || count($this->spec) == 0;
+    }
+
+
     /**
      * register_type
      * namespace is option params, prevent duplication of type name from causing type to be overwritten
@@ -89,5 +95,38 @@ class ContractMetadataV4 extends ContractMetadataV3
     {
         return $this->registeredSiType;
     }
+
+    /**
+     * getTypeNameBySiType
+     *
+     *
+     * @param int $SiType
+     * @return string
+     */
+    public function getTypeNameBySiType (int $SiType): string
+    {
+        return $this->registeredSiType[$SiType];
+    }
+
+    /**
+     * get message by name
+     *
+     * @param string $name
+     * @return array
+     */
+    public function message (string $name): array
+    {
+        if (!array_key_exists("messages", $this->spec)) {
+            return [];
+        }
+
+        foreach ($this->spec["messages"] as $message) {
+            if ($message["label"] == $name) {
+                return $message;
+            }
+        }
+        return [];
+    }
+
 
 }
