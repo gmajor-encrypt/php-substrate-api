@@ -18,7 +18,8 @@
     "gmajor/sr25519-bindings": "dev-main",
     "tuupola/base58": "2.x-dev",
     "gmajor/substrate-codec-php": "dev-master",
-    "ext-gmp": "*"
+    "ext-gmp": "*",
+    "netresearch/jsonmapper": "dev-master"
   },
   "require-dev": {
     "phpunit/phpunit": "^5.7 || ^9.3.0"

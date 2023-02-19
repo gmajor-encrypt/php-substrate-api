@@ -124,7 +124,6 @@ class Pallet
             'params' => $call["params"]
         ];
         // extrinsic encode
-        $sign = Util::addHex($this->rpc->codec->createTypeByTypeString("Extrinsic")->setMetadata($this->rpc->metadata)->encode($extrinsic));
-        return $sign;
+        return Util::addHex($this->rpc->codec->createTypeByTypeString("Extrinsic")->setMetadata($this->rpc->metadata)->encode($extrinsic));
     }
 }

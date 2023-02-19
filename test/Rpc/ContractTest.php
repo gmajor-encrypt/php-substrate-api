@@ -11,6 +11,8 @@ use Rpc\Contract\Abi\ContractMetadataV1;
 use Rpc\Contract\Abi\ContractMetadataV2;
 use Rpc\Contract\Abi\ContractMetadataV3;
 use Rpc\Contract\Abi\ContractMetadataV4;
+use Rpc\Contract\ContractExecResult;
+use Rpc\Contract\ContractExecResultResult;
 use Rpc\KeyPair\KeyPair;
 use Rpc\SubstrateRpc;
 use Rpc\Util;
@@ -132,27 +134,51 @@ final class ContractTest extends TestCase
         $wsClient->close();
     }
 
+    /**
+     * @throws \SodiumException
+     * @throws ConnectionException
+     */
+    public function testContractQueryState ()
+    {
+        $endpoint = getenv("RPC_URL") == "" ? "ws://127.0.0.1:9944" : getenv("RPC_URL");
+        $wsClient = new SubstrateRpc($endpoint);
+        $wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $wsClient->hasher));
+
+        $v4 = ContractMetadataV4::to_obj(json_decode(file_get_contents(__DIR__ . '/ink/ink_v4.json'), true));
+        $v4->register_type($wsClient->tx->codec->getGenerator(), "testAbiMetadataV4Parse");
+
+        // read contract
+        $contract = new Contract($wsClient->tx, $this->flipperContract, $v4);
+        $execResult = $contract->state->get([]);
+        foreach (["gasConsumed", "gasRequired", "StorageDeposit", "debugMessage", "result"] as $value) {
+            $this->assertArrayHasKey($value, $execResult->result);
+        }
+        $result = ContractExecResult::deserialization($execResult->result);
+        $this->assertNotEmpty($result->result->Ok);
+        // decode result
+        // Result<bool,ink_primitives::LangError>
+        $this->assertArrayHasKey("Ok", $result->decodeResult($wsClient->tx->codec, $execResult->type));
+        $wsClient->close();
+    }
+
 
     /**
      * @throws \SodiumException
      * @throws ConnectionException
      */
-    public function testContractCall ()
+    public function testContractSendTx ()
     {
         $endpoint = getenv("RPC_URL") == "" ? "ws://127.0.0.1:9944" : getenv("RPC_URL");
         $wsClient = new SubstrateRpc($endpoint);
         $wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $wsClient->hasher));
+
         $v4 = ContractMetadataV4::to_obj(json_decode(file_get_contents(__DIR__ . '/ink/ink_v4.json'), true));
         $v4->register_type($wsClient->tx->codec->getGenerator(), "testAbiMetadataV4Parse");
-        $contract = new Contract($wsClient->tx, $this->flipperContract, $v4);
-        var_dump($contract->get([]));
 
+        // read contract
+        $contract = new Contract($wsClient->tx, $this->flipperContract, $v4);
+        $result = $contract->call->flip([]);
+        $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
         $wsClient->close();
-//        $result = $wsClient->contract->new(Constant::$flipperCode,"0x9bae9d5e01",[]);
-//        $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
-//
     }
 }
-
-// 0x0000000001000000000000000000000000000000000001030806000000
-// 0x0000000001000000000000000000000000000000000001030806000000
