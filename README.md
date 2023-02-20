@@ -139,12 +139,12 @@ var_dump($result); // transaction hash
 $wsClient->close()
 ````
 
-* Keyring
-
+### Keyring
 
 The Keyring allows you to perform operations on these keys (such as sign/verify) and never exposes the secretKey
 
-to the outside world. Support ed25519(Edwards https://ed25519.cr.yp.to/) or sr25519(schnorrkel https://github.com/w3f/schnorrkel)
+to the outside world. Support ed25519(Edwards https://ed25519.cr.yp.to/) or sr25519(
+schnorrkel https://github.com/w3f/schnorrkel)
 
 ```php
 <?php
@@ -156,13 +156,131 @@ $signature = $keyPair->sign("msg");
 $keyPair->verify($signature, "123");
 ```
 
+### Contract
+
+* Metadata support
+
+The metadata is used to describe a contract in a language agnostic way. Metadata can declare the storage and executable
+methods and types contained in the contract
+
+We currently support ink metadata v0,v1,v2,v3,v4.
+
+```php
+<?php
+use Rpc\Contract\Abi\Convert;
+use Codec\Base;
+use Codec\Types\ScaleInstance;
+$content = json_decode(file_get_contents(__DIR__ . '/ink/ink_v0.json'), true);
+$metadata = Convert::toLatest($content); // convert metadata to latest version
+// reg metadata types
+$scale = new ScaleInstance(Base::create());
+$metadata->register_type($scale->getGenerator(), "some_prefix");
+```
+
+* Deploy contract
+
+After declaring a Contract class, you can call the new method to create a contract.
+
+About how to build ink contract, you can refer to
+this https://docs.substrate.io/tutorials/smart-contracts/prepare-your-first-contract/
+
+Below is an example.
+
+```php
+<?php
+use Rpc\KeyPair\KeyPair;
+use Rpc\SubstrateRpc;
+use Rpc\Contract;
+
+$wsClient = new SubstrateRpc($endpoint);
+$wsClient->setSigner(KeyPair::initKeyPair("sr25519",$seed, $wsClient->hasher));
+$contract = new Contract($wsClient->tx);
+$result = $contract->new($contract_code, $args, []); // with default option
+
+# If you need to additionally set the gas limit and storageDepositLimit, you can set it like this
+$result = $contract->new($contract_code, $args, ["gasLimit"=>100000,"storageDepositLimit"=>50000]); // with default option
+```
+
+* Read Contract state
+
+Reading the storage on the contract does not consume any gas, so anyone can read the contract.
+
+You can simply read the contract through ```$contract->state->{$method}($param1,$param2)`
+```php
+<?php
+use Rpc\KeyPair\KeyPair;
+use Rpc\SubstrateRpc;
+use Rpc\Contract;
+
+$wsClient = new SubstrateRpc($endpoint);
+// set signer
+$wsClient->setSigner(KeyPair::initKeyPair("sr25519", $seed, $wsClient->hasher));
+// get abi
+$v4 = ContractMetadataV4::to_obj(json_decode(file_get_contents(__DIR__ . '/ink/ink_v4.json'), true));
+// register contract type
+$v4->register_type($wsClient->tx->codec->getGenerator(), "testAbiMetadataV4Parse");
+
+// read contract
+$contract = new Contract($wsClient->tx, $contractAddress, $v4);
+// call get method
+$execResult = $contract->state->get();
+// parse exec Result
+$result = ContractExecResult::deserialization($execResult->result);
+print_r($result);
+```
+
+* Send Contract transaction
+
+Sending contract transactions is very similar to executing extrinsic.
+You can simply exec the contract through ```$contract->call->{$method}($param1,$param2)`
+
+```php
+<?php
+use Rpc\KeyPair\KeyPair;
+use Rpc\SubstrateRpc;
+use Rpc\Contract;
+$wsClient = new SubstrateRpc($endpoint);
+// set signer
+$wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $wsClient->hasher));
+
+// register contract type
+$v4 = ContractMetadataV4::to_obj(json_decode(file_get_contents(__DIR__ . '/ink/ink_v4.json'), true));
+$v4->register_type($wsClient->tx->codec->getGenerator(), "testAbiMetadataV4Parse");
+
+// send contract transaction
+$contract = new Contract($wsClient->tx, $contractAddress, $v4);
+$result = $contract->call->flip([]); // with default option
+
+// If you need to additionally set the gas limit and storageDepositLimit, you can set it like this
+$result = $contract->call->flip(["storageDepositLimit"=>$limit,["gasLimit"=>["refTime"=>$refTime,"proofSize"=>$proofSize]] ]); 
+print_r($result);// extrinsic_hash
+```
+
+* generate contract address
+
+Since the address algorithm of the contract is fixed, it is easy to calculate the deployed contract address
+
+```php
+<?php
+use Rpc\Hasher\Hasher;
+use Rpc\Contract\Address;
+use Codec\Base;
+use Codec\Types\ScaleInstance;
+$hasher = new Hasher();
+$codec = new ScaleInstance(Base::create());
+$bytes = $codec->createTypeByTypeString("bytes");
+Address::GenerateAddress($hasher, "$deployer", "$codeHash", $bytes->encode($inputData), $bytes->encode("$salt")));
+
+```
+
+
 ### Example
 
 More examples can refer to the test file https://github.com/gmajor-encrypt/php-substrate-api/tree/master/test/Rpc
 
 ## Test
 
-```
+```bash
 make test
 ```
 
@@ -176,21 +294,21 @@ compilation after install, so manual compilation is required. You can run this s
 ```bash
 cd vendor/gmajor/sr25519-bindings/go && go build -buildmode=c-shared -o ../src/Crypto/sr25519.so .
 ```
+
 ### WebSocket\ConnectionException: Could not open socket to "127.0.0.1:9944"
 
-In the test,The keyPair used in the test process is //Alice, **ws://127.0.0.1:9944** is used by default as the node for testing SendTransaction.
-This node can start any private network settings by itself.
-You can also set the node address through environment variables.
+In the test,The keyPair used in the test process is //Alice, **ws://127.0.0.1:9944** is used by default as the node for
+testing SendTransaction. This node can start any private network settings by itself. You can also set the node address
+through environment variables.
+
 ```base
 export RPC_URL=ws://....
 ```
 
-
-
 ## Resources
 
 - [sr25519](https://github.com/gmajor-encrypt/sr25519-bindings)
-- [Polkadot.js](http://polkadot.js.org/)
+- [polkadot.js](http://polkadot.js.org/)
 - [substrate.dev](https://docs.substrate.io/v3/runtime/custom-rpcs/)
 - [substrate-api-sidecar](https://github.com/paritytech/substrate-api-sidecar)
 

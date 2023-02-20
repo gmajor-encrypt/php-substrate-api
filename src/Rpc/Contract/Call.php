@@ -2,7 +2,6 @@
 
 namespace Rpc\Contract;
 
-use Codec\ScaleBytes;
 use Codec\Types\ScaleInstance;
 use Codec\Utils;
 use Rpc\Rpc;

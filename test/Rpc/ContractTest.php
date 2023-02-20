@@ -3,7 +3,6 @@
 namespace Rpc\Test;
 
 use Codec\Base;
-use Codec\ScaleBytes;
 use Codec\Types\ScaleInstance;
 use PHPUnit\Framework\TestCase;
 use Rpc\Contract;
@@ -12,7 +11,9 @@ use Rpc\Contract\Abi\ContractMetadataV1;
 use Rpc\Contract\Abi\ContractMetadataV2;
 use Rpc\Contract\Abi\ContractMetadataV3;
 use Rpc\Contract\Abi\ContractMetadataV4;
+use Rpc\Contract\Address;
 use Rpc\Contract\ContractExecResult;
+use Rpc\Hasher\Hasher;
 use Rpc\KeyPair\KeyPair;
 use Rpc\SubstrateRpc;
 use Rpc\Util;
@@ -99,23 +100,26 @@ final class ContractTest extends TestCase
 
     public function testAbiMetadataV4Parse ()
     {
-        $content = json_decode(file_get_contents(__DIR__ . '/ink/ink_v4.json'), true);
-        $v4 = ContractMetadataV4::to_obj($content);
-        $this->assertGreaterThan(0, count($v4->spec));
-        $this->assertGreaterThan(0, count($v4->types));
-        foreach (["constructors", "docs", "events", "messages"] as $value) {
-            $this->assertArrayHasKey($value, $v4->spec);
+        foreach (["ink_v4", "ink_erc20"] as $fileName) {
+            $content = json_decode(file_get_contents(__DIR__ . '/ink/' . $fileName . '.json'), true);
+            $v4 = ContractMetadataV4::to_obj($content);
+            $this->assertGreaterThan(0, count($v4->spec));
+            $this->assertGreaterThan(0, count($v4->types));
+            foreach (["constructors", "docs", "events", "messages"] as $value) {
+                $this->assertArrayHasKey($value, $v4->spec);
+            }
+            $scale = new ScaleInstance(Base::create());
+            $v4->register_type($scale->getGenerator(), "testAbiMetadataV4Parse");
+            $this->assertArrayHasKey("Primitive", $v4->types[0]["type"]["def"]);
+            $this->assertArrayNotHasKey("primitive", $v4->types[0]["type"]["def"]);
+
+            $this->assertEquals(["Result"], $v4->types[1]["type"]["path"]);
+            self::assertNotNull($scale->getGenerator()->getRegistry("testAbiMetadataV4Parse:ink_primitives:LangError"));
+            self::assertNull($scale->getGenerator()->getRegistry("Result<bool,testAbiMetadataV4Parse:ink_primitives:LangError>"));
+
+            $this->assertEquals(count($v4->types), count($v4->getRegisteredSiType()));
         }
-        $scale = new ScaleInstance(Base::create());
-        $v4->register_type($scale->getGenerator(), "testAbiMetadataV4Parse");
-        $this->assertArrayHasKey("Primitive", $v4->types[0]["type"]["def"]);
-        $this->assertArrayNotHasKey("primitive", $v4->types[0]["type"]["def"]);
 
-        $this->assertEquals(["Result"], $v4->types[1]["type"]["path"]);
-        self::assertNotNull($scale->getGenerator()->getRegistry("testAbiMetadataV4Parse:ink_primitives:LangError"));
-        self::assertNull($scale->getGenerator()->getRegistry("Result<bool,testAbiMetadataV4Parse:ink_primitives:LangError>"));
-
-        $this->assertEquals(count($v4->types), count($v4->getRegisteredSiType()));
     }
 
 
@@ -179,5 +183,18 @@ final class ContractTest extends TestCase
         $result = $contract->call->flip([]);
         $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
         $wsClient->close();
+    }
+
+    /**
+     * @return void
+     * @throws \SodiumException
+     */
+    public function testContractAddress ()
+    {
+        $hasher = new Hasher();
+        $codec = new ScaleInstance(Base::create());
+        $bytes = $codec->createTypeByTypeString("bytes");
+        $this->assertEquals("b17e29478cb1029a52efe2a62268af0d550bad5f10e05c4621602696209c9171", Address::GenerateAddress($hasher, "0x90b5ab205c6974c9ea841be688864633dc9ca8a357843eeacf2314649965fe22", "0x0829899532bc68083fc9bf3cd13cf2048abc23f20583a8781989f68bce995c65", $bytes->encode(""), $bytes->encode("")));
+        $this->assertEquals("e9253b25cc661ac5eccb978dcf6dfad55e3db66e9aed8c407997e9f49a881b18", Address::GenerateAddress($hasher, "0x90b5ab205c6974c9ea841be688864633dc9ca8a357843eeacf2314649965fe22", "0xc1c8f7908a009379743280998a998580c8c7415919cb873cb320756b972a7d3a", $bytes->encode("9bae9d5e01"), $bytes->encode("01")));
     }
 }
