@@ -19,9 +19,9 @@ use GMP;
  */
 class ContractExecResult
 {
-    public GMP $gasConsumed;
+    public array $gasConsumed;
 
-    public GMP $gasRequired;
+    public array $gasRequired;
 
     public array $StorageDeposit;
 
@@ -38,8 +38,8 @@ class ContractExecResult
     public static function deserialization (array $j): ContractExecResult
     {
         $result = new ContractExecResult();
-        $result->gasConsumed = is_string($j["gasConsumed"]) ? gmp_init($j["gasConsumed"]) : $j["gasConsumed"];
-        $result->gasRequired = is_string($j["gasRequired"]) ? gmp_init($j["gasRequired"]) : $j["gasRequired"];
+        $result->gasConsumed = $j["gasConsumed"];
+        $result->gasRequired = $j["gasRequired"];
         $result->StorageDeposit = $j["StorageDeposit"];
         $result->debugMessage = $j["debugMessage"];
         $result->result = ContractExecResultResult::deserialization($j["result"]);
@@ -60,5 +60,16 @@ class ContractExecResult
         return $codec->process($type, new ScaleBytes($this->result->Ok->data));
     }
 
+
+    public static function convertGasRequired (array $GasRequired): array
+    {
+        if (array_key_exists("proof_size", $GasRequired) && array_key_exists("ref_time", $GasRequired)) {
+            return $GasRequired;
+        }
+        if (array_key_exists("refTime", $GasRequired) && array_key_exists("proofSize", $GasRequired)) {
+            return ["proof_size" => $GasRequired["proofSize"], "ref_time" => $GasRequired["refTime"]];
+        }
+        return [];
+    }
 }
 

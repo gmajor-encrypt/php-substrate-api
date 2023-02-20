@@ -93,6 +93,18 @@ class State
         if (count($attributes) != count($message["args"])) {
             throw new InvalidArgumentException(sprintf("invalid param, expect %d, actually %d", count($message["args"]), count($attributes)));
         }
+        // , $this->ABI->getTypeNameBySiType($message["returnType"]["type"])];
+        return (object)["result" => $this->getState($message, $attributes), "type" => $this->ABI->getTypeNameBySiType($message["returnType"]["type"])];
+    }
+
+
+    /**
+     * @param array $message
+     * @param array $attributes
+     * @return mixed
+     */
+    public function getState (array $message, array $attributes): mixed
+    {
         $codec = $this->codec;
         $data = Utils::trimHex($this->tx->getKeyPairPk()); // signer
         $data = $data . Utils::trimHex($this->address);      // contract address
@@ -105,9 +117,7 @@ class State
             $data = $data . $codec->createTypeByTypeString($this->ABI->getTypeNameBySiType($arg["type"]))->encode($attributes[$index]);
         }
         $rawValue = $this->tx->rpc->state->call("ContractsApi_call", $data);
-        // , $this->ABI->getTypeNameBySiType($message["returnType"]["type"])];
-        return (object)["result" => $codec->process("ContractExecResult", new ScaleBytes($rawValue)), "type" => $this->ABI->getTypeNameBySiType($message["returnType"]["type"])];
+        return $codec->process("ContractExecResult", new ScaleBytes($rawValue));
     }
-
 
 }

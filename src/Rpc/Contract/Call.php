@@ -74,7 +74,7 @@ class Call
      * If you want to set storageDepositLimit and gasLimit or value, you can put them in the last parameters,
      * for example：
      * with option
-     * queryStorage("param1","param2",["gasLimit"=>500000,"storageDepositLimit"=>0,"value"=>0])
+     * queryStorage("param1","param2",["gasLimit"=>["proof_size" => $proof_size, "ref_time" => $ref_time],"storageDepositLimit"=>0,"value"=>0])
      *
      * none option:
      * queryStorage("param1","param2",[])
@@ -97,26 +97,33 @@ class Call
         }
 
         $option = end($attributes);
-        $gasLimit = array_key_exists("gasLimit", $option) ? $option["gasLimit"] : "500000000";
-        $storageDepositLimit = array_key_exists("storageDepositLimit", $option) ? $option["storageDepositLimit"] : "630400000000";
+        array_pop($attributes);
+        $state = new State($this->tx, $this->address, $this->ABI);
+        $defaultGas = ContractExecResult::deserialization($state->getState($message, $attributes));
+
+        $gasLimit = array_key_exists("gasLimit", $option) ? $option["gasLimit"] : $defaultGas->gasRequired;
+        $storageDepositLimit = array_key_exists("storageDepositLimit", $option) ? $option["storageDepositLimit"] : null;
         $value = array_key_exists("value", $option) ? $option["value"] : 0;
 
-        array_pop($attributes);
         if (count($attributes) != count($message["args"])) {
             throw new InvalidArgumentException(sprintf("invalid param, expect %d, actually %d", count($message["args"]), count($attributes)));
         }
 
-
         $codec = $this->codec;
-        $data = $codec->createTypeByTypeString("bytes")->encode(Util::trimHex($message["selector"]));
+        $data = Util::trimHex($message["selector"]);
         foreach ($message["args"] as $index => $arg) {
             $data = $data . $codec->createTypeByTypeString($this->ABI->getTypeNameBySiType($arg["type"]))->encode($attributes[$index]);
         }
+        $gasLimit = ContractExecResult::convertGasRequired($gasLimit);
+        if (count($gasLimit) == 0) {
+            throw new InvalidArgumentException("invalid gas_limit option");
+        }
+
         // contracts.call("dest","value","gasLimit","storageDepositLimit","data")
         return $this->tx->Contracts->call(
             ["Id" => $this->address],
             $value,
-            ["proof_size" => 0, "ref_time" => $gasLimit],
+            $gasLimit,
             $storageDepositLimit,
             Utils::hexToBytes($data)
         );

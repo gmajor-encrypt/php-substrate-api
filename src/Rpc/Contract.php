@@ -2,6 +2,7 @@
 
 namespace Rpc;
 
+use Codec\Base;
 use Codec\Utils;
 use Rpc\Contract\Abi\ContractMetadataV4;
 use Rpc\Contract\Call;
@@ -34,6 +35,16 @@ class Contract
      */
     public Call $call;
 
+
+    /**
+     * weight v2 reg
+     *
+     * @var array|string[]
+     */
+    protected array $defaultReg = [
+        "weight" => "weightV2"
+    ];
+
     /**
      * Contract construct
      *
@@ -45,6 +56,8 @@ class Contract
     public function __construct (Tx $tx, string $address = "", ContractMetadataV4 $ABI = null)
     {
         $this->tx = $tx;
+        $Generator = $tx->codec->getGenerator();
+        Base::regCustom($Generator, $this->defaultReg);
         $this->state = new State($tx, $address, $ABI);
         $this->call = new Call($tx, $address, $ABI);
     }

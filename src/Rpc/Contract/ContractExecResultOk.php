@@ -2,9 +2,6 @@
 
 namespace Rpc\Contract;
 
-use Codec\ScaleBytes;
-use Codec\Types\ScaleInstance;
-
 class ContractExecResultOk
 {
     public array $flags;
