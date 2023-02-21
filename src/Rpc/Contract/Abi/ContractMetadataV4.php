@@ -8,8 +8,12 @@ use Codec\Types\ScaleInfo;
 /**
  * Wrap by Contract Metadata V3
  */
-class ContractMetadataV4 extends ContractMetadataV3
+class ContractMetadataV4
 {
+
+    public array $types;
+
+    public array $spec;
 
     /**
      * @var $registeredSiType array
@@ -25,6 +29,12 @@ class ContractMetadataV4 extends ContractMetadataV3
         $instance->types = $j["types"];
         $instance->spec = $j["spec"];
         return $instance;
+    }
+
+    public function __construct ()
+    {
+        $this->types = [];
+        $this->spec = [];
     }
 
 
@@ -124,6 +134,24 @@ class ContractMetadataV4 extends ContractMetadataV3
             if ($message["label"] == $name) {
                 return $message;
             }
+        }
+        return [];
+    }
+
+
+    /**
+     * get constructor
+     *
+     * @return array
+     */
+    public function constructor (): array
+    {
+        if (!array_key_exists("constructors", $this->spec)) {
+            return [];
+        }
+
+        foreach ($this->spec["constructors"] as $message) {
+            return $message;
         }
         return [];
     }

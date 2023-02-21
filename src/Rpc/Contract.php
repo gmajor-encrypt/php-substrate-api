@@ -45,6 +45,14 @@ class Contract
         "weight" => "weightV2"
     ];
 
+
+    /**
+     * abi contract metadata abi
+     *
+     * @var ContractMetadataV4
+     */
+    public ContractMetadataV4 $ABI;
+
     /**
      * Contract construct
      *
@@ -58,8 +66,12 @@ class Contract
         $this->tx = $tx;
         $Generator = $tx->codec->getGenerator();
         Base::regCustom($Generator, $this->defaultReg);
-        $this->state = new State($tx, $address, $ABI);
-        $this->call = new Call($tx, $address, $ABI);
+        $this->ABI = new ContractMetadataV4();
+        if (!is_null($ABI)) {
+            $this->ABI = $ABI;
+            $this->state = new State($tx, $address, $ABI);
+            $this->call = new Call($tx, $address, $ABI);
+        }
     }
 
 
@@ -67,15 +79,33 @@ class Contract
      * deploy new contract
      *
      * @param string $code
-     * @param string $data
+     * @param string|array $data
      * @param array $option set gasLimit storageDepositLimit
      * @return string
      */
 
     // https://github.com/paritytech/substrate/blob/0ce39208841e519920b57d3ba5a3962188c4c66c/frame/contracts/src/lib.rs#L187
-    public function new (string $code, string $data, array $option = []): string
+    public function new (string $code, mixed $data, array $option = []): string
     {
         $code = Utils::trimHex($code);
+        if ($this->ABI->is_empty()) {
+            if (!is_string($data)) {
+                throw new \InvalidArgumentException("Invalid constructors input");
+            }
+        } else {
+            if (!is_array($data)) {
+                throw new \InvalidArgumentException("Invalid constructors args, args is array");
+            }
+            $args = $data;
+            $constructors = $this->ABI->constructor();
+            $data = $constructors["selector"];
+            if (count($constructors["args"]) != count($args)) {
+                throw new \InvalidArgumentException(sprintf("invalid param, expect %d, actually %d", count($constructors["args"]), count($data)));
+            }
+            foreach ($constructors["args"] as $index => $arg) {
+                $data = $data . $this->tx->codec->createTypeByTypeString($this->ABI->getTypeNameBySiType($arg["type"]["type"]))->encode($args[$index]);
+            }
+        }
         $data = Utils::trimHex($data);
         $gasLimit = array_key_exists("gasLimit", $option) ? $option["gasLimit"] : "50000000000";
         $storageDepositLimit = array_key_exists("storageDepositLimit", $option) ? $option["storageDepositLimit"] : 0;

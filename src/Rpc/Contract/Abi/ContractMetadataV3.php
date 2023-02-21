@@ -35,7 +35,7 @@ class ContractMetadataV3
     }
 
     /**
-     * to v3 metadata
+     * to v4 metadata
      *
      * @return ContractMetadataV4
      */

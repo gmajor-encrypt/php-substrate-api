@@ -126,7 +126,9 @@ class ExtrinsicPayload
         $value = $value . $codec->createTypeByTypeString("Hash")->encode($this->blockHash);
         if (count(Utils::hexToBytes($value)) > 256) {
             $hash = new Hasher();
-            return $hash->ByHasherName("Blake2_256", $value);
+            $value = $hash->ByHasherName("Blake2_256", $value);
+            unset($hash);
+            return $value;
         }
         return $value;
     }

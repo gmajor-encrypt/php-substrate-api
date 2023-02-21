@@ -195,10 +195,10 @@ use Rpc\Contract;
 $wsClient = new SubstrateRpc($endpoint);
 $wsClient->setSigner(KeyPair::initKeyPair("sr25519",$seed, $wsClient->hasher));
 $contract = new Contract($wsClient->tx);
-$result = $contract->new($contract_code, $args, []); // with default option
+$result = $contract->new($contract_code, $inputData); // with default option
 
 # If you need to additionally set the gas limit and storageDepositLimit, you can set it like this
-$result = $contract->new($contract_code, $args, ["gasLimit"=>100000,"storageDepositLimit"=>50000]); // with default option
+$result = $contract->new($contract_code, $inputData,[], ["gasLimit"=>100000,"storageDepositLimit"=>50000]); // with default option
 ```
 
 * Read Contract state
@@ -206,6 +206,7 @@ $result = $contract->new($contract_code, $args, ["gasLimit"=>100000,"storageDepo
 Reading the storage on the contract does not consume any gas, so anyone can read the contract.
 
 You can simply read the contract through ```$contract->state->{$method}($param1,$param2)`
+
 ```php
 <?php
 use Rpc\KeyPair\KeyPair;
@@ -231,8 +232,8 @@ print_r($result);
 
 * Send Contract transaction
 
-Sending contract transactions is very similar to executing extrinsic.
-You can simply exec the contract through ```$contract->call->{$method}($param1,$param2)`
+Sending contract transactions is very similar to executing extrinsic. You can simply exec the contract through ```
+$contract->call->{$method}($param1,$param2)`
 
 ```php
 <?php
@@ -272,7 +273,6 @@ $bytes = $codec->createTypeByTypeString("bytes");
 Address::GenerateAddress($hasher, "$deployer", "$codeHash", $bytes->encode($inputData), $bytes->encode("$salt")));
 
 ```
-
 
 ### Example
 

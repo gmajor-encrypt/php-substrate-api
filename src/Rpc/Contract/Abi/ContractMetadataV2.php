@@ -37,6 +37,7 @@ class ContractMetadataV2
 
 
     /**
+     * to v3 metadata
      * @return ContractMetadataV3
      */
     public function toV3 (): ContractMetadataV3

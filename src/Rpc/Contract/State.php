@@ -114,7 +114,7 @@ class State
         $data = $data . $codec->createTypeByTypeString("bytes")->encode(Util::trimHex($message["selector"]));
 
         foreach ($message["args"] as $index => $arg) {
-            $data = $data . $codec->createTypeByTypeString($this->ABI->getTypeNameBySiType($arg["type"]))->encode($attributes[$index]);
+            $data = $data . $codec->createTypeByTypeString($this->ABI->getTypeNameBySiType($arg["type"]["type"]))->encode($attributes[$index]);
         }
         $rawValue = $this->tx->rpc->state->call("ContractsApi_call", $data);
         return $codec->process("ContractExecResult", new ScaleBytes($rawValue));
