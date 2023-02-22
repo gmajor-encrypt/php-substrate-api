@@ -98,10 +98,10 @@ class Contract
             }
             $args = $data;
             $constructors = $this->ABI->constructor();
-            $data = $constructors["selector"];
             if (count($constructors["args"]) != count($args)) {
-                throw new \InvalidArgumentException(sprintf("invalid param, expect %d, actually %d", count($constructors["args"]), count($data)));
+                throw new \InvalidArgumentException(sprintf("invalid param, expect %d, actually %d", count($constructors["args"]), count($args)));
             }
+            $data = $constructors["selector"];
             foreach ($constructors["args"] as $index => $arg) {
                 $data = $data . $this->tx->codec->createTypeByTypeString($this->ABI->getTypeNameBySiType($arg["type"]["type"]))->encode($args[$index]);
             }

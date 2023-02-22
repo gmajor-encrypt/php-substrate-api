@@ -58,6 +58,10 @@ final class ContractTest extends TestCase
         $latest = $v1->toV2()->toV3()->toV4();
         $this->assertGreaterThan(0, count($latest->spec));
         $this->assertGreaterThan(0, count($latest->types));
+
+        // ContractMetadataV0 with no metadataVersion param will raise error
+        $this->expectException(\InvalidArgumentException::class);
+        ContractMetadataV0::to_obj(["types" => [], "spec" => []]);
     }
 
 
@@ -78,6 +82,10 @@ final class ContractTest extends TestCase
         $latest = $v2->toV3()->toV4();
         $this->assertGreaterThan(0, count($latest->spec));
         $this->assertGreaterThan(0, count($latest->types));
+
+        // ContractMetadataV1 with no V1 key will raise error
+        $this->expectException(\InvalidArgumentException::class);
+        ContractMetadataV1::to_obj(["V2" => ["types" => [], "spec" => []]]);
     }
 
 
@@ -98,6 +106,10 @@ final class ContractTest extends TestCase
         $latest = $v3->toV4();
         $this->assertGreaterThan(0, count($latest->spec));
         $this->assertGreaterThan(0, count($latest->types));
+
+        // ContractMetadataV2 with no V2 key will raise error
+        $this->expectException(\InvalidArgumentException::class);
+        ContractMetadataV2::to_obj(["v3" => ["types" => [], "spec" => []]]);
     }
 
     public function testAbiMetadataV3Parse ()
@@ -110,6 +122,10 @@ final class ContractTest extends TestCase
         $v4 = $v3->toV4();
         $this->assertGreaterThan(0, count($v4->spec));
         $this->assertGreaterThan(0, count($v4->types));
+
+        // ContractMetadataV3 with no V3 key will raise error
+        $this->expectException(\InvalidArgumentException::class);
+        ContractMetadataV3::to_obj(["v4" => ["types" => [], "spec" => []]]);
     }
 
     public function testAbiMetadataV4Parse ()
@@ -133,6 +149,9 @@ final class ContractTest extends TestCase
 
             $this->assertEquals(count($v4->types), count($v4->getRegisteredSiType()));
         }
+        // ContractMetadataV4 with no version will raise error
+        $this->expectException(\InvalidArgumentException::class);
+        ContractMetadataV4::to_obj(["types" => [], "spec" => []]);
 
     }
 
@@ -145,6 +164,9 @@ final class ContractTest extends TestCase
         $contract = new Contract($this->wsClient->tx);
         $result = $contract->new(Constant::$flipperCode, "0x9bae9d5e01");
         $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
+        // input data not string will raise error
+        $this->expectException(\InvalidArgumentException::class);
+        $contract->new(Constant::$flipperCode, ["0x9bae9d5e01"]);
     }
 
     public function testErc20DeployContract ()
@@ -152,8 +174,12 @@ final class ContractTest extends TestCase
         $v4 = ContractMetadataV4::to_obj(json_decode(file_get_contents(__DIR__ . '/ink/ink_erc20.json'), true));
         $v4->register_type($this->wsClient->tx->codec->getGenerator(), "testErc20DeployContract");
         $contract = new Contract($this->wsClient->tx, "", $v4);
+        // deploy with constructor args
         $result = $contract->new(Constant::$Erc20Code, [0]);
         $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
+        // constructor args count Mismatch will raise error
+        $this->expectException(\InvalidArgumentException::class);
+        $contract->new(Constant::$flipperCode, [0,1,2,3]);
     }
 
     /**
@@ -176,6 +202,9 @@ final class ContractTest extends TestCase
         // decode result
         // Result<bool,ink_primitives::LangError>
         $this->assertArrayHasKey("Ok", $result->decodeResult($this->wsClient->tx->codec, $execResult->type));
+        // query state count Mismatch will raise error
+        $this->expectException(\InvalidArgumentException::class);
+        $contract->state->get("xxx","2222");
     }
 
 
@@ -192,6 +221,9 @@ final class ContractTest extends TestCase
         $contract = new Contract($this->wsClient->tx, $this->flipperContract, $v4);
         $result = $contract->call->flip([]);
         $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
+        // query state count Mismatch will raise error
+        $this->expectException(\InvalidArgumentException::class);
+        $contract->call->flip("xxx","2222",[]);
     }
 
     /**
@@ -205,5 +237,9 @@ final class ContractTest extends TestCase
         $bytes = $codec->createTypeByTypeString("bytes");
         $this->assertEquals("b17e29478cb1029a52efe2a62268af0d550bad5f10e05c4621602696209c9171", Address::GenerateAddress($hasher, "0x90b5ab205c6974c9ea841be688864633dc9ca8a357843eeacf2314649965fe22", "0x0829899532bc68083fc9bf3cd13cf2048abc23f20583a8781989f68bce995c65", $bytes->encode(""), $bytes->encode("")));
         $this->assertEquals("e9253b25cc661ac5eccb978dcf6dfad55e3db66e9aed8c407997e9f49a881b18", Address::GenerateAddress($hasher, "0x90b5ab205c6974c9ea841be688864633dc9ca8a357843eeacf2314649965fe22", "0xc1c8f7908a009379743280998a998580c8c7415919cb873cb320756b972a7d3a", $bytes->encode("9bae9d5e01"), $bytes->encode("01")));
+
+        $this->expectException(\InvalidArgumentException::class);
+        // pk or code_hash not bytes 32 length will raise error
+        Address::GenerateAddress($hasher, "", "", "","");
     }
 }

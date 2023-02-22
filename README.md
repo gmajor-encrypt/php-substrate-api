@@ -193,8 +193,10 @@ use Rpc\SubstrateRpc;
 use Rpc\Contract;
 
 $wsClient = new SubstrateRpc($endpoint);
+// set deployer keyring
 $wsClient->setSigner(KeyPair::initKeyPair("sr25519",$seed, $wsClient->hasher));
 $contract = new Contract($wsClient->tx);
+// $inputData = constructor_selector + encode(args...)
 $result = $contract->new($contract_code, $inputData); // with default option
 
 # If you need to additionally set the gas limit and storageDepositLimit, you can set it like this
@@ -232,8 +234,8 @@ print_r($result);
 
 * Send Contract transaction
 
-Sending contract transactions is very similar to executing extrinsic. You can simply exec the contract through ```
-$contract->call->{$method}($param1,$param2)`
+Sending contract transactions is very similar to executing extrinsic. You can simply exec the contract through 
+```$contract->call->{$method}($param1,$param2,$option=[])```
 
 ```php
 <?php
@@ -270,7 +272,7 @@ use Codec\Types\ScaleInstance;
 $hasher = new Hasher();
 $codec = new ScaleInstance(Base::create());
 $bytes = $codec->createTypeByTypeString("bytes");
-Address::GenerateAddress($hasher, "$deployer", "$codeHash", $bytes->encode($inputData), $bytes->encode("$salt")));
+Address::GenerateAddress($hasher, $deployer, $codeHash, $bytes->encode($inputData), $bytes->encode($salt)));
 
 ```
 
