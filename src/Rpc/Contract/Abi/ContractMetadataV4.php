@@ -22,7 +22,7 @@ class ContractMetadataV4
 
     public static function to_obj (array $j): ContractMetadataV4
     {
-        if ($j["version"] != 4) {
+        if (!array_key_exists("version", $j) or $j["version"] != 4) {
             throw new \InvalidArgumentException("Invalid contract v4 metadata");
         }
         $instance = new ContractMetadataV4;
