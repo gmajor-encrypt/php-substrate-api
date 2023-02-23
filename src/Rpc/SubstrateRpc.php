@@ -22,9 +22,9 @@ class SubstrateRpc
     /**
      * hasher instance
      *
-     * @var Hasher
+     * @var $hasher;
      */
-    public Hasher $hasher;
+    public ?Hasher $hasher=null;
 
 
     /**
@@ -38,7 +38,7 @@ class SubstrateRpc
     {
         $this->rpc = new Rpc($endpoint, $header);
         $this->tx = new Tx($this->rpc);
-        $this->hasher = new Hasher();
+        $this->hasher =null;
     }
 
     /**
@@ -73,11 +73,12 @@ class SubstrateRpc
     /**
      *
      * @param keyPair $keyPair
+     * @param Hasher $hash
      * @return void
      */
-    public function setSigner (keyPair $keyPair)
+    public function setSigner (keyPair $keyPair, Hasher $hash)
     {
+        $this->hasher = $hash;
         $this->tx->setkeyPair($keyPair);
     }
-
 }

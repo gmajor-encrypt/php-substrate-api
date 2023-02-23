@@ -112,7 +112,6 @@ class ExtrinsicPayload
      *
      * @param ScaleInstance $codec
      * @return string
-     * @throws \SodiumException
      */
     public function encode (ScaleInstance $codec): string
     {
@@ -123,13 +122,6 @@ class ExtrinsicPayload
         $value = $value . $codec->createTypeByTypeString("U32")->encode($this->specVersion);
         $value = $value . $codec->createTypeByTypeString("U32")->encode($this->transactionVersion);
         $value = $value . $codec->createTypeByTypeString("Hash")->encode($this->genesisHash);
-        $value = $value . $codec->createTypeByTypeString("Hash")->encode($this->blockHash);
-        if (count(Utils::hexToBytes($value)) > 256) {
-            $hash = new Hasher();
-            $value = $hash->ByHasherName("Blake2_256", $value);
-            unset($hash);
-            return $value;
-        }
-        return $value;
+        return $value . $codec->createTypeByTypeString("Hash")->encode($this->blockHash);
     }
 }

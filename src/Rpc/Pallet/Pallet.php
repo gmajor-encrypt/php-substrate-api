@@ -2,6 +2,7 @@
 
 namespace Rpc\Pallet;
 
+use Codec\Utils;
 use Rpc\KeyPair\KeyPair;
 use Rpc\Rpc;
 use Rpc\ss58;
@@ -110,7 +111,11 @@ class Pallet
 
         // sign ExtrinsicPayload
         $payload = new ExtrinsicPayload($opt, $encodeCall);
-        $signature = $payload->sign($this->keyPair, $payload->encode($this->rpc->codec));
+        $payload_encode = $payload->encode($this->rpc->codec);
+        if (count(Utils::hexToBytes($payload_encode)) > 256) {
+            $payload_encode = $this->keyPair->getHasher()->ByHasherName("Blake2_256", $payload_encode);
+        }
+        $signature = $payload->sign($this->keyPair, $payload_encode);
         // extrinsic build
         $extrinsic = [
             'version' => '84',

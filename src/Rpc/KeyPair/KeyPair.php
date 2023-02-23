@@ -11,21 +11,32 @@ class KeyPair
 
     /**
      * keyPair type
+     *
      * @var string
      */
     public string $type;
 
     /**
      * public key
+     *
      * @var string
      */
     public string $pk;
 
-    public function __construct (IKeyPair $pair)
+    protected Hasher $hasher;
+
+    /**
+     * KeyPair construct func
+     *
+     * @param IKeyPair $pair
+     * @param Hasher $hasher
+     */
+    public function __construct (IKeyPair $pair, Hasher $hasher)
     {
         $this->pair = $pair;
         $this->type = $pair->type();
         $this->pk = $pair->pk();
+        $this->hasher = $hasher;
     }
 
 
@@ -40,6 +51,16 @@ class KeyPair
         return $this->pair->sign($msg);
     }
 
+    /**
+     * get hasher instance
+     *
+     * @return Hasher
+     */
+    public function getHasher (): Hasher
+    {
+        return $this->hasher;
+    }
+
 
     /**
      * verify a signed msg
@@ -48,9 +69,9 @@ class KeyPair
      * @param string $msg
      * @return bool
      */
-    public function verify (string $signature,string $msg): bool
+    public function verify (string $signature, string $msg): bool
     {
-        return $this->pair->verify($signature,$msg);
+        return $this->pair->verify($signature, $msg);
     }
 
     /**
@@ -65,8 +86,8 @@ class KeyPair
     public static function initKeyPair (string $type, string $sk, Hasher $hasher): KeyPair
     {
         return match ($type) {
-            "ed25519" => new KeyPair(new ed25519($sk)),
-            "sr25519" => new KeyPair(new sr25519($sk, $hasher)),
+            "ed25519" => new KeyPair(new ed25519($sk), $hasher),
+            "sr25519" => new KeyPair(new sr25519($sk, $hasher), $hasher),
             default => throw new \InvalidArgumentException("keyPair only support ed25519 or sr25519"),
         };
     }

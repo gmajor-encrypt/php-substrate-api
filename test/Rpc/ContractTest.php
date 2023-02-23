@@ -13,6 +13,7 @@ use Rpc\Contract\Abi\ContractMetadataV3;
 use Rpc\Contract\Abi\ContractMetadataV4;
 use Rpc\Contract\Address;
 use Rpc\Contract\ContractExecResult;
+use Rpc\Hasher\Hasher;
 use Rpc\KeyPair\KeyPair;
 use Rpc\SubstrateRpc;
 use Rpc\Util;
@@ -28,6 +29,7 @@ final class ContractTest extends TestCase
 
 
     public SubstrateRpc $wsClient;
+    protected Hasher $hasher;
 
     /**
      * @before
@@ -37,7 +39,8 @@ final class ContractTest extends TestCase
     {
         $endpoint = getenv("RPC_URL") == "" ? "wss://shibuya-rpc.dwellir.com" : getenv("RPC_URL");
         $this->wsClient = new SubstrateRpc($endpoint);
-        $this->wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $this->wsClient->hasher));
+        $this->hasher = new Hasher();
+        $this->wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $this->hasher), $this->hasher);
     }
 
 
@@ -179,7 +182,7 @@ final class ContractTest extends TestCase
         $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
         // constructor args count Mismatch will raise error
         $this->expectException(\InvalidArgumentException::class);
-        $contract->new(Constant::$flipperCode, [0,1,2,3]);
+        $contract->new(Constant::$flipperCode, [0, 1, 2, 3]);
     }
 
     /**
@@ -204,7 +207,7 @@ final class ContractTest extends TestCase
         $this->assertArrayHasKey("Ok", $result->decodeResult($this->wsClient->tx->codec, $execResult->type));
         // query state count Mismatch will raise error
         $this->expectException(\InvalidArgumentException::class);
-        $contract->state->get("xxx","2222");
+        $contract->state->get("xxx", "2222");
     }
 
 
@@ -223,7 +226,7 @@ final class ContractTest extends TestCase
         $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
         // query state count Mismatch will raise error
         $this->expectException(\InvalidArgumentException::class);
-        $contract->call->flip("xxx","2222",[]);
+        $contract->call->flip("xxx", "2222", []);
     }
 
     /**
@@ -240,6 +243,6 @@ final class ContractTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
         // pk or code_hash not bytes 32 length will raise error
-        Address::GenerateAddress($hasher, "", "", "","");
+        Address::GenerateAddress($hasher, "", "", "", "");
     }
 }

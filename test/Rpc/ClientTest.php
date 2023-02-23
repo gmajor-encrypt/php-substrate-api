@@ -3,6 +3,7 @@
 namespace Rpc\Test;
 
 
+use Rpc\Hasher\Hasher;
 use Rpc\KeyPair\KeyPair;
 use Rpc\Util;
 use Rpc\WSClient;
@@ -17,6 +18,15 @@ final class ClientTest extends TestCase
     public string $AliceSeed = "0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a";
     public array $BobId = ["Id" => "8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"];
 
+    protected Hasher $hasher;
+
+    /**
+     * @before
+     */
+    public function initHash ()
+    {
+        $this->hasher = new Hasher();
+    }
 
     public function testWsClientShouldReceiveData ()
     {
@@ -84,7 +94,7 @@ final class ClientTest extends TestCase
 
         // state_call with no params will raise error
         $this->expectException(\InvalidArgumentException::class);
-        $wsClient->rpc->state->call("","","");
+        $wsClient->rpc->state->call("", "", "");
 
         // close ws client connection
         $wsClient->close();
@@ -99,7 +109,7 @@ final class ClientTest extends TestCase
         // Alice send transfer 12345 token to Bob
         $endpoint = getenv("RPC_URL") == "" ? "wss://shibuya-rpc.dwellir.com" : getenv("RPC_URL");
         $wsClient = new SubstrateRpc($endpoint);
-        $wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $wsClient->hasher));
+        $wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $this->hasher), $this->hasher);
         $result = $wsClient->tx->Balances->transfer($this->BobId, 12345);
         $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
         $wsClient->close();

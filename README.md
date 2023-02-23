@@ -100,9 +100,10 @@ $codec = new ScaleInstance(Base::create());
 $metadataV14RawValue = "...." //  from json rpc state_getMetadata
 $metadata = $codec->process("metadata", new ScaleBytes($metadataV14RawValue))["metadata"];
 // Timestamp.now storage key
-print_r(StorageKey::encode("Timestamp", "now", $metadata, [])));
+$hasher = new Hasher();
+print_r(StorageKey::encode($hasher,"Timestamp", "now", $metadata, [])));
 // Staking.Bonded storage key with param accountId
-print_r(StorageKey::encode("System", "Account", $metadata, ["0x1c79a5ada2ff0d55aaa65dfeaf0cba667babf312f9bf100444279b34cd769e49"]))
+print_r(StorageKey::encode($hasher,"System", "Account", $metadata, ["0x1c79a5ada2ff0d55aaa65dfeaf0cba667babf312f9bf100444279b34cd769e49"]))
 
 ```
 
@@ -133,7 +134,8 @@ use Rpc\SubstrateRpc;
 $AliceSeed = "0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a";
 $BobId = ["Id" => "8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"];
 $wsClient = new SubstrateRpc($endpoint);
-$wsClient->setSigner(KeyPair::initKeyPair("sr25519", $AliceSeed, $wsClient->hasher));
+$hasher = new Hasher();
+$wsClient->setSigner(KeyPair::initKeyPair("sr25519", $AliceSeed, $hasher),$hasher);
 $result = $wsClient->tx->Balances->transfer($BobId, 12345);
 var_dump($result); // transaction hash
 $wsClient->close()
@@ -194,7 +196,8 @@ use Rpc\Contract;
 
 $wsClient = new SubstrateRpc($endpoint);
 // set deployer keyring
-$wsClient->setSigner(KeyPair::initKeyPair("sr25519",$seed, $wsClient->hasher));
+$hasher = new Hasher();
+$wsClient->setSigner(KeyPair::initKeyPair("sr25519",$seed, $hasher),$hasher);
 $contract = new Contract($wsClient->tx);
 // $inputData = constructor_selector + encode(args...)
 $result = $contract->new($contract_code, $inputData); // with default option
@@ -217,7 +220,8 @@ use Rpc\Contract;
 
 $wsClient = new SubstrateRpc($endpoint);
 // set signer
-$wsClient->setSigner(KeyPair::initKeyPair("sr25519", $seed, $wsClient->hasher));
+$hasher = new Hasher();
+$wsClient->setSigner(KeyPair::initKeyPair("sr25519", $seed, $hash),$hash);
 // get abi
 $v4 = ContractMetadataV4::to_obj(json_decode(file_get_contents(__DIR__ . '/ink/ink_v4.json'), true));
 // register contract type
@@ -234,7 +238,7 @@ print_r($result);
 
 * Send Contract transaction
 
-Sending contract transactions is very similar to executing extrinsic. You can simply exec the contract through 
+Sending contract transactions is very similar to executing extrinsic. You can simply exec the contract through
 ```$contract->call->{$method}($param1,$param2,$option=[])```
 
 ```php
@@ -244,7 +248,8 @@ use Rpc\SubstrateRpc;
 use Rpc\Contract;
 $wsClient = new SubstrateRpc($endpoint);
 // set signer
-$wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $wsClient->hasher));
+$hasher = new Hasher();
+$wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $hasher),$hasher);
 
 // register contract type
 $v4 = ContractMetadataV4::to_obj(json_decode(file_get_contents(__DIR__ . '/ink/ink_v4.json'), true));
@@ -294,7 +299,10 @@ The current default sr25519-bindings FFI is for mac. Unfortunately, php composer
 compilation after install, so manual compilation is required. You can run this script
 
 ```bash
-cd vendor/gmajor/sr25519-bindings/go && go build -buildmode=c-shared -o ../src/Crypto/sr25519.so .
+## For darwin
+cd vendor/gmajor/sr25519-bindings/go && go build -buildmode=c-shared -o ../src/Crypto/sr25519.dylib .
+## For linux 
+cd vendor/gmajor/sr25519-bindings/go && go build -buildmode=c-shared -o ../src/Crypto/sr25519.so . 
 ```
 
 ### WebSocket\ConnectionException: Could not open socket to "127.0.0.1:9944"

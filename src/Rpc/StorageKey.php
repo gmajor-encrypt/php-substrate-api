@@ -40,15 +40,15 @@ class StorageKey
      *
      * https://docs.substrate.io/v3/advanced/storage/#querying-storage
      *
+     * @param Hasher $hasher
      * @param string $moduleName
      * @param string $storageName
      * @param array $metadata
      * @param array $args
      * @return StorageKey
      *
-     * @throws \SodiumException
      */
-    public static function encode (string $moduleName, string $storageName, array $metadata, array $args = array()): StorageKey
+    public static function encode (Hasher $hasher,string $moduleName, string $storageName, array $metadata, array $args = array()): StorageKey
     {
         $storageName = ucfirst($storageName);
 
@@ -101,13 +101,11 @@ class StorageKey
             throw new \InvalidArgumentException(sprintf("invalid args, expect %d, actual %d ", count($hashers), count($args)));
         }
 
-        $hash = new Hasher();
-
         // To calculate the key for a simple Storage Value, take the TwoX 128 hash of the name of the pallet
         //  that contains the Storage Value and append to it the TwoX 128 hash of the name of the Storage Value itself
-        $encodeKey = $hash->ByHasherName("Twox128", ucfirst($moduleName)) . $hash->ByHasherName("Twox128", $storageName);
+        $encodeKey = $hasher->ByHasherName("Twox128", ucfirst($moduleName)) . $hasher->ByHasherName("Twox128", $storageName);
         foreach ($args as $index => $arg) {
-            $encodeKey = $encodeKey . $hash->ByHasherName($hashers[$index], $arg);
+            $encodeKey = $encodeKey . $hasher->ByHasherName($hashers[$index], $arg);
         }
 
         return new StorageKey($valueType, $encodeKey);
