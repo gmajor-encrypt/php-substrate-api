@@ -61,6 +61,7 @@ final class ContractTest extends TestCase
         $latest = $v1->toV2()->toV3()->toV4();
         $this->assertGreaterThan(0, count($latest->spec));
         $this->assertGreaterThan(0, count($latest->types));
+        $this->assertFalse($latest->is_empty());
 
         // ContractMetadataV0 with no metadataVersion param will raise error
         $this->expectException(\InvalidArgumentException::class);
@@ -85,6 +86,7 @@ final class ContractTest extends TestCase
         $latest = $v2->toV3()->toV4();
         $this->assertGreaterThan(0, count($latest->spec));
         $this->assertGreaterThan(0, count($latest->types));
+        $this->assertFalse($latest->is_empty());
 
         // ContractMetadataV1 with no V1 key will raise error
         $this->expectException(\InvalidArgumentException::class);
@@ -109,6 +111,7 @@ final class ContractTest extends TestCase
         $latest = $v3->toV4();
         $this->assertGreaterThan(0, count($latest->spec));
         $this->assertGreaterThan(0, count($latest->types));
+        $this->assertFalse($latest->is_empty());
 
         // ContractMetadataV2 with no V2 key will raise error
         $this->expectException(\InvalidArgumentException::class);
@@ -125,6 +128,7 @@ final class ContractTest extends TestCase
         $v4 = $v3->toV4();
         $this->assertGreaterThan(0, count($v4->spec));
         $this->assertGreaterThan(0, count($v4->types));
+        $this->assertFalse($v4->is_empty());
 
         // ContractMetadataV3 with no V3 key will raise error
         $this->expectException(\InvalidArgumentException::class);

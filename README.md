@@ -160,7 +160,7 @@ $keyPair->verify($signature, "123");
 
 ### Contract
 
-* Metadata support
+#### Metadata support
 
 The metadata is used to describe a contract in a language agnostic way. Metadata can declare the storage and executable
 methods and types contained in the contract
@@ -179,7 +179,7 @@ $scale = new ScaleInstance(Base::create());
 $metadata->register_type($scale->getGenerator(), "some_prefix");
 ```
 
-* Deploy contract
+#### Deploy contract
 
 After declaring a Contract class, you can call the new method to create a contract.
 
@@ -206,7 +206,7 @@ $result = $contract->new($contract_code, $inputData); // with default option
 $result = $contract->new($contract_code, $inputData,[], ["gasLimit"=>100000,"storageDepositLimit"=>50000]); // with default option
 ```
 
-* Read Contract state
+#### Read Contract state
 
 Reading the storage on the contract does not consume any gas, so anyone can read the contract.
 
@@ -236,7 +236,7 @@ $result = ContractExecResult::deserialization($execResult->result);
 print_r($result);
 ```
 
-* Send Contract transaction
+#### Send Contract transaction
 
 Sending contract transactions is very similar to executing extrinsic. You can simply exec the contract through
 ```$contract->call->{$method}($param1,$param2,$option=[])```
@@ -264,7 +264,7 @@ $result = $contract->call->flip(["storageDepositLimit"=>$limit,["gasLimit"=>["re
 print_r($result);// extrinsic_hash
 ```
 
-* generate contract address
+#### Generate contract address
 
 Since the address algorithm of the contract is fixed, it is easy to calculate the deployed contract address
 

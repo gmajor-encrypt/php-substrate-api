@@ -78,9 +78,9 @@ class Contract
     /**
      * deploy new contract
      *
-     * @param string $code
-     * @param string|array $data
-     * @param array $option set gasLimit storageDepositLimit
+     * @param string $code contract wasm code
+     * @param string|array $data constructor input data or constructor args if abi set
+     * @param array $option set gasLimit storageDepositLimit(optional)
      * @return string
      */
 
