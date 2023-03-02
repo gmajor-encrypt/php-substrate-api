@@ -101,7 +101,7 @@ $metadataV14RawValue = "...." //  from json rpc state_getMetadata
 $metadata = $codec->process("metadata", new ScaleBytes($metadataV14RawValue))["metadata"];
 // Timestamp.now storage key
 $hasher = new Hasher();
-print_r(StorageKey::encode($hasher,"Timestamp", "now", $metadata, [])));
+print_r(StorageKey::encode($hasher,"Timestamp", "now", $metadata, []));
 // Staking.Bonded storage key with param accountId
 print_r(StorageKey::encode($hasher,"System", "Account", $metadata, ["0x1c79a5ada2ff0d55aaa65dfeaf0cba667babf312f9bf100444279b34cd769e49"]))
 
@@ -210,7 +210,7 @@ $result = $contract->new($contract_code, $inputData,[], ["gasLimit"=>100000,"sto
 
 Reading the storage on the contract does not consume any gas, so anyone can read the contract.
 
-You can simply read the contract through ```$contract->state->{$method}($param1,$param2)`
+You can simply read the contract through ```$contract->state->{$method}($param1,$param2)```
 
 ```php
 <?php
