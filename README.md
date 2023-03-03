@@ -5,7 +5,12 @@ PHP Substrate RPC Api
 
 ## Requirement
 
-php >=8.0 (install ffi https://www.php.net/manual/en/intro.ffi.php)
+* php >=8.0 (install ffi https://www.php.net/manual/en/intro.ffi.php)
+* curl (https://www.php.net/manual/en/curl.installation.php) 
+* json (https://www.php.net/manual/en/json.installation.php) 
+* sodium (https://www.php.net/manual/en/sodium.installation.php) 
+* gmp (https://www.php.net/manual/en/gmp.installation.php)
+
 
 ## Installation
 
