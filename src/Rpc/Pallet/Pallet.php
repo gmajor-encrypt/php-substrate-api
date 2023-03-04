@@ -3,10 +3,12 @@
 namespace Rpc\Pallet;
 
 use Codec\Utils;
+use InvalidArgumentException;
 use Rpc\KeyPair\KeyPair;
 use Rpc\Rpc;
 use Rpc\ss58;
 use Rpc\Util;
+use SodiumException;
 
 class Pallet
 {
@@ -61,8 +63,8 @@ class Pallet
      * @param string $call
      * @param array $attributes
      *
-     * @return void
-     * @throws \InvalidArgumentException|\SodiumException
+     * @return array|string
+     * @throws InvalidArgumentException|SodiumException
      */
     public function __call (string $call, array $attributes)
     {
@@ -77,10 +79,13 @@ class Pallet
      * send signed Extrinsic
      *
      * @param string $signature
-     * @return mixed
+     * @return string|array
      */
-    public function submitAndWatchExtrinsic (string $signature): mixed
+    public function submitAndWatchExtrinsic (string $signature): string|array
     {
+        if ($this->options["subscribe"]) {
+            return $this->rpc->author->submitAndWatchExtrinsic($signature);
+        }
         return $this->rpc->author->submitExtrinsic($signature);
     }
 
@@ -93,7 +98,7 @@ class Pallet
      *
      * @param array $call
      * @return string
-     * @throws \SodiumException
+     * @throws SodiumException
      */
     public function signAndBuildExtrinsic (array $call): string
     {

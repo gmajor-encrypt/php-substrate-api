@@ -4,8 +4,6 @@ namespace Rpc\Contract;
 
 use Codec\ScaleBytes;
 use Codec\Types\ScaleInstance;
-use GMP;
-
 /**
  *
  *  Contract Exec Result type
@@ -40,7 +38,7 @@ class ContractExecResult
         $result = new ContractExecResult();
         $result->gasConsumed = $j["gasConsumed"];
         $result->gasRequired = $j["gasRequired"];
-        $result->StorageDeposit = $j["StorageDeposit"];
+        $result->StorageDeposit = array_key_exists("StorageDeposit", $j) ? $j["StorageDeposit"] : [];
         $result->debugMessage = $j["debugMessage"];
         $result->result = ContractExecResultResult::deserialization($j["result"]);
 

@@ -51,7 +51,8 @@ class Tx
      */
     protected array $options = [
         "tip" => 0,
-        "era" => "00"
+        "era" => "00",
+        "subscribe" => false,
     ];
 
     public function __construct (Rpc $rpc)

@@ -23,20 +23,6 @@ class ContractMetadataV2
 
 
     /**
-     * To json array
-     *
-     * @return array
-     */
-    public function as_json (): array
-    {
-        return [
-            'spec' => $this->spec,
-            'types' => $this->types,
-        ];
-    }
-
-
-    /**
      * to v3 metadata
      * @return ContractMetadataV3
      */

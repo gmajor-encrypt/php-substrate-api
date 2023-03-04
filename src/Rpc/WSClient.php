@@ -63,6 +63,24 @@ class WSClient extends Client
             throw new ConnectionException("this connection has been closed");
         }
         $this->client->send(json_encode(Json2::build($method, $params)));
+        // subscription
+        if ($method == "author_submitAndWatchExtrinsic") {
+            $retry = 0;
+            while (true) {
+                $res = json_decode($this->client->receive(), true);
+                if (array_key_exists("error", $res)) {
+                    throw new InvalidArgumentException(sprintf("call rpc get error %s", $res["error"]["message"]));
+                }
+                if (array_key_exists("params", $res) && array_key_exists("result", $res["params"]) && is_array($res["params"]["result"]) && array_key_exists("inBlock", $res["params"]["result"])) {
+                    return $res;
+                }
+                $retry++;
+                if ($retry > 3) {
+                    break;
+                }
+            }
+            return $res;
+        }
         $res = json_decode($this->client->receive(), true);
         if (array_key_exists("error", $res)) {
             throw new InvalidArgumentException(sprintf("call rpc get error %s", $res["error"]["message"]));

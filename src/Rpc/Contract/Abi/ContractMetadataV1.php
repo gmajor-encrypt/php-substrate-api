@@ -20,20 +20,6 @@ class ContractMetadataV1
     }
 
 
-
-    /**
-     * To json array
-     * @return array
-     */
-    public function as_json (): array
-    {
-        return [
-            'spec' => $this->spec,
-            'types' => $this->types,
-        ];
-    }
-
-
     public function toV2 (): ContractMetadataV2
     {
         $instance = new ContractMetadataV2;

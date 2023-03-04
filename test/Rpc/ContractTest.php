@@ -27,6 +27,10 @@ final class ContractTest extends TestCase
 
     public string $flipperContract = "0xfe6d6f70ff2940ae47bfb3fac7cbb5189a1e1e46ee1852acadb0490625d064ec";
 
+    public string $erc20Contract = "0x1769ab4db74a66e17e62e5e2fdb6a5b75c922cf558c951e8ad10290aba3f95df";
+
+    // https://shibuya.subscan.io/extrinsic/3319796-6
+
 
     public SubstrateRpc $wsClient;
     protected Hasher $hasher;

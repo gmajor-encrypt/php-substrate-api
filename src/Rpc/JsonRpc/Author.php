@@ -86,8 +86,7 @@ class Author extends Base implements IAuthor
      */
     public function submitAndWatchExtrinsic (string $extrinsic): array
     {
-        $res = $this->client->read("author_submitAndWatchExtrinsic", [$extrinsic]);
-        return $res["result"];
+        return $this->client->read("author_submitAndWatchExtrinsic", [$extrinsic]);
     }
 
     /**

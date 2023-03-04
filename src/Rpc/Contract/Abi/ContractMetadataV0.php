@@ -33,20 +33,6 @@ class ContractMetadataV0
         return $instance;
     }
 
-    /**
-     * To json array
-     *
-     * @return array
-     */
-    public function as_json (): array
-    {
-        return [
-            'metadataVersion' => $this->metadataVersion,
-            'spec' => $this->spec,
-            'types' => $this->types,
-        ];
-    }
-
     private function convertDef (array $def): array
     {
         $key = array_key_first($def);

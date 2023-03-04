@@ -3,9 +3,11 @@
 namespace Rpc;
 
 use Codec\Base;
+use Codec\ScaleBytes;
 use Codec\Utils;
 use Rpc\Contract\Abi\ContractMetadataV4;
 use Rpc\Contract\Call;
+use Rpc\Contract\ContractExecResult;
 use Rpc\Contract\State;
 
 class Contract
@@ -107,11 +109,39 @@ class Contract
             }
         }
         $data = Utils::trimHex($data);
-        $gasLimit = array_key_exists("gasLimit", $option) ? $option["gasLimit"] : "50000000000";
+        $salt = dechex(time());
+
+        // estimate gasLimit
+        $defaultGas = ContractExecResult::deserialization($this->instantiateRequest($code, $data, $salt));
+        $gasLimit = array_key_exists("gasLimit", $option) ? ["proof_size" => 0, "ref_time" => $option["gasLimit"]] : ContractExecResult::convertGasRequired($defaultGas->gasRequired);
         $storageDepositLimit = array_key_exists("storageDepositLimit", $option) ? $option["storageDepositLimit"] : 0;
-        $salt = Utils::hexToBytes(dechex(time()));
+
         // Contracts.Instantiate_with_code(value,gas_limit,storage_deposit_limit,code,data,salt)
-        return $this->tx->Contracts->instantiate_with_code($storageDepositLimit, ["proof_size" => 0, "ref_time" => $gasLimit], null, Utils::hexToBytes($code), Utils::hexToBytes($data), $salt);
+        return $this->tx->Contracts->instantiate_with_code($storageDepositLimit, $gasLimit, null, Utils::hexToBytes($code), Utils::hexToBytes($data), Utils::hexToBytes($salt));
     }
 
+
+    /**
+     * estimate gasLimit
+     * return InstantiateRequest struct
+     *
+     * @param string $code
+     * @param string $input
+     * @param string $salt
+     * @return mixed
+     */
+    public function instantiateRequest (string $code, string $input, string $salt): mixed
+    {
+        $codec = $this->tx->codec;
+        $data = Utils::trimHex($this->tx->getKeyPairPk()); // signer
+        $data = $data . $codec->createTypeByTypeString("Balance")->encode(0);
+        $data = $data . $codec->createTypeByTypeString("Option<u64>")->encode(null); // gas_limit
+        $data = $data . $codec->createTypeByTypeString("Option<u64>")->encode(null); // proof_size
+        $data = $data . $codec->createTypeByTypeString("Option<Balance>")->encode(null); // storage_deposit_limit
+        $data = $data . $codec->createTypeByTypeString("bytes")->encode($code); // bytes
+        $data = $data . $codec->createTypeByTypeString("bytes")->encode($input); // bytes
+        $data = $data . $codec->createTypeByTypeString("bytes")->encode($salt); // salt
+        $rawValue = $this->tx->rpc->state->call("ContractsApi_instantiate", $data);
+        return $codec->process("ContractInstantiateResult", new ScaleBytes($rawValue));
+    }
 }

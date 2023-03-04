@@ -17,8 +17,8 @@ class ContractExecResultOk
     public static function deserialization (array $j): ContractExecResultOk
     {
         $result = new ContractExecResultOk();
-        $result->flags = $j["flags"];
-        $result->data = array_key_exists("data", $j) ? $j["data"] : [];
+        $result->flags = array_key_exists("flags", $j) ? $j["flags"] : [];
+        $result->data = array_key_exists("data", $j) ? $j["data"] : "";
         return $result;
     }
 
