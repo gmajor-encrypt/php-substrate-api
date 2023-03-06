@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0x0d3317ca292846537b33360b7b049a3feb5d099cc446b6fe02fb1bc93b50e012",
+    "hash": "0xf43f22075f6c49ffa9f861c680f895f71cd04767ee539708c8371b7a063e8c46",
     "language": "ink! 4.0.0-rc",
     "compiler": "rustc 1.67.0",
     "build_info": {
@@ -50,7 +50,86 @@
       }
     ],
     "docs": [],
-    "events": [],
+    "events": [
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "from",
+            "type": {
+              "displayName": [
+                "Option"
+              ],
+              "type": 11
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "to",
+            "type": {
+              "displayName": [
+                "Option"
+              ],
+              "type": 11
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "value",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "docs": [],
+        "label": "Transfer"
+      },
+      {
+        "args": [
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "owner",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "spender",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "docs": [],
+            "indexed": true,
+            "label": "value",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "docs": [],
+        "label": "Approval"
+      }
+    ],
     "lang_error": {
       "displayName": [
         "ink",
@@ -102,6 +181,153 @@
           "type": 4
         },
         "selector": "0x0f755a56"
+      },
+      {
+        "args": [
+          {
+            "label": "to",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "label": "value",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "docs": [],
+        "label": "transfer",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 8
+        },
+        "selector": "0x84a15da1"
+      },
+      {
+        "args": [
+          {
+            "label": "from",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "label": "to",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "label": "value",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "docs": [
+          " Transfers tokens on the behalf of the `from` account to the `to account"
+        ],
+        "label": "transfer_from",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 8
+        },
+        "selector": "0x0b396f18"
+      },
+      {
+        "args": [
+          {
+            "label": "spender",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "label": "value",
+            "type": {
+              "displayName": [
+                "Balance"
+              ],
+              "type": 0
+            }
+          }
+        ],
+        "docs": [],
+        "label": "approve",
+        "mutates": true,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 8
+        },
+        "selector": "0x681266a0"
+      },
+      {
+        "args": [
+          {
+            "label": "owner",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          },
+          {
+            "label": "spender",
+            "type": {
+              "displayName": [
+                "AccountId"
+              ],
+              "type": 5
+            }
+          }
+        ],
+        "docs": [],
+        "label": "allowance",
+        "mutates": false,
+        "payable": false,
+        "returnType": {
+          "displayName": [
+            "ink",
+            "MessageResult"
+          ],
+          "type": 4
+        },
+        "selector": "0x6a00165e"
       }
     ]
   },
@@ -132,6 +358,20 @@
                 }
               },
               "name": "balances"
+            },
+            {
+              "layout": {
+                "root": {
+                  "layout": {
+                    "leaf": {
+                      "key": "0xeca021b7",
+                      "ty": 0
+                    }
+                  },
+                  "root_key": "0xeca021b7"
+                }
+              },
+              "name": "allowances"
             }
           ],
           "name": "Erc20"
@@ -297,6 +537,147 @@
         "def": {
           "primitive": "u8"
         }
+      }
+    },
+    {
+      "id": 8,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 9
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 3
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 9
+          },
+          {
+            "name": "E",
+            "type": 3
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 2
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 10
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 2
+          },
+          {
+            "name": "E",
+            "type": 10
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 10,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "InsufficientBalance"
+              },
+              {
+                "index": 1,
+                "name": "InsufficientAllowance"
+              }
+            ]
+          }
+        },
+        "path": [
+          "erc20",
+          "erc20",
+          "Error"
+        ]
+      }
+    },
+    {
+      "id": 11,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "index": 0,
+                "name": "None"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 5
+                  }
+                ],
+                "index": 1,
+                "name": "Some"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 5
+          }
+        ],
+        "path": [
+          "Option"
+        ]
       }
     }
   ],

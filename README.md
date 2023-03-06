@@ -14,8 +14,14 @@ PHP Substrate RPC Api
 
 ## Installation
 
+If you want to install php-substrate-api in an existing project
 ```sh
 composer require gmajor/php-substrate-api
+```
+
+if it is a new project
+```sh
+mkdir new_project && cd new_project  && composer init && composer require gmajor/php-substrate-api
 ```
 
 ## Basic Usage
