@@ -4,6 +4,7 @@ namespace Rpc\Contract;
 
 use Codec\ScaleBytes;
 use Codec\Types\ScaleInstance;
+
 /**
  *
  *  Contract Exec Result type
@@ -68,6 +69,20 @@ class ContractExecResult
             return ["proof_size" => $GasRequired["proofSize"], "ref_time" => $GasRequired["refTime"]];
         }
         return [];
+    }
+
+
+    /**
+     * get Decode Result from contract result
+     *
+     * @param object $j
+     * @param ScaleInstance $codec
+     * @return mixed
+     */
+    public static function getDecodeResult (object $j, ScaleInstance $codec,): mixed
+    {
+        $result = self::deserialization($j->result);
+        return $result->decodeResult($codec, $j->type);
     }
 }
 

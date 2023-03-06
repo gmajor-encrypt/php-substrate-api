@@ -234,6 +234,7 @@ You can simply read the contract through ```$contract->state->{$method}($param1,
 use Rpc\KeyPair\KeyPair;
 use Rpc\SubstrateRpc;
 use Rpc\Contract;
+use Rpc\Contract\ContractExecResult;
 
 $wsClient = new SubstrateRpc($endpoint);
 // set signer
@@ -249,7 +250,7 @@ $contract = new Contract($wsClient->tx, $contractAddress, $v4);
 // call get method
 $execResult = $contract->state->get();
 // parse exec Result
-$result = ContractExecResult::deserialization($execResult->result);
+$result =ContractExecResult::getDecodeResult($execResult, $wsClient->tx->codec)
 print_r($result);
 ```
 

@@ -213,13 +213,11 @@ final class ContractTest extends TestCase
         $this->wsClient->tx->withOpt(["subscribe" => true]);
         // total_supply
         $execResult = $contract->state->total_supply();
-        $result = ContractExecResult::deserialization($execResult->result);
-        $this->assertNotEmpty($result->result->Ok);
-        $this->assertEquals(["Ok" => gmp_init(100000000)], $result->decodeResult($this->wsClient->tx->codec, $execResult->type));
+        $this->assertEquals(["Ok" => gmp_init(100000000)], ContractExecResult::getDecodeResult($execResult, $this->wsClient->tx->codec));
 
         // balance_of
         $execResult = $contract->state->balance_of($this->BobId);
-        $bobBalance = ContractExecResult::deserialization($execResult->result)->decodeResult($this->wsClient->tx->codec, $execResult->type)["Ok"];
+        $bobBalance = ContractExecResult::getDecodeResult($execResult, $this->wsClient->tx->codec)["Ok"];
         $this->assertTrue(gmp_cmp($bobBalance, 0) == 1);// $aliceBalance must positive
 
         // exec transfer
@@ -227,7 +225,7 @@ final class ContractTest extends TestCase
 
         // after transfer
         $execResult = $contract->state->balance_of($this->BobId);
-        $bobBalance2 = ContractExecResult::deserialization($execResult->result)->decodeResult($this->wsClient->tx->codec, $execResult->type)["Ok"];
+        $bobBalance2 = ContractExecResult::getDecodeResult($execResult, $this->wsClient->tx->codec)["Ok"];
         $this->assertEquals(gmp_add($bobBalance, 100), $bobBalance2);
     }
 
