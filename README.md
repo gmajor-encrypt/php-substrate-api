@@ -147,8 +147,14 @@ $BobId = ["Id" => "8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26
 $wsClient = new SubstrateRpc($endpoint);
 $hasher = new Hasher();
 $wsClient->setSigner(KeyPair::initKeyPair("sr25519", $AliceSeed, $hasher),$hasher);
-$result = $wsClient->tx->Balances->transfer($BobId, 12345);
+$tx = $wsClient->tx;
+$result = $tx->Balances->transfer($BobId, 12345);
 var_dump($result); // transaction hash
+
+// if you want waiting transaction exec, you can set tx with option
+$tx->withOpt(["subscribe" => true]);
+$result = $tx->Balances->transfer($BobId, 12345);
+var_dump($result); // Will not return until execution is complete
 $wsClient->close()
 ````
 
@@ -325,6 +331,11 @@ through environment variables.
 ```base
 export RPC_URL=ws://....
 ```
+
+### gmajor/php-substrate-api v0.1.0 requires textalk/websocket dev-master -> found ``xxxx`` but it does not match your minimum-stability
+
+You need set [minimum-stability](https://getcomposer.org/doc/04-schema.md#minimum-stability) like this ``"minimum-stability": "dev"`` in composer. 
+
 
 ## Resources
 

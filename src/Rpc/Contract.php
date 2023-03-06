@@ -83,11 +83,11 @@ class Contract
      * @param string $code contract wasm code
      * @param string|array $data constructor input data or constructor args if abi set
      * @param array $option set gasLimit storageDepositLimit(optional)
-     * @return string
+     * @return string|array
      */
 
     // https://github.com/paritytech/substrate/blob/0ce39208841e519920b57d3ba5a3962188c4c66c/frame/contracts/src/lib.rs#L187
-    public function new (string $code, mixed $data, array $option = []): string
+    public function new (string $code, mixed $data, array $option = []): string|array
     {
         $code = Utils::trimHex($code);
         if ($this->ABI->is_empty()) {

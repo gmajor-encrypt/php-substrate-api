@@ -104,6 +104,9 @@ class Tx
         if (array_key_exists("era", $opt)) {
             $this->options["era"] = $opt["era"];
         }
+        if (array_key_exists("subscribe", $opt)) {
+            $this->options["subscribe"] = $opt["subscribe"];
+        }
         return $this;
     }
 

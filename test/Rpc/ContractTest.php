@@ -25,9 +25,14 @@ final class ContractTest extends TestCase
 {
     public string $AliceSeed = "0xe5be9a5092b81bca64be81d212e7f2f9eba183bb7a90954f7b76361f6edb5c0a";
 
+
+    public string $AliceId = "0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d";
+    public string $BobId = "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48";
+
+
     public string $flipperContract = "0xfe6d6f70ff2940ae47bfb3fac7cbb5189a1e1e46ee1852acadb0490625d064ec";
 
-    public string $erc20Contract = "0x1769ab4db74a66e17e62e5e2fdb6a5b75c922cf558c951e8ad10290aba3f95df";
+    public string $erc20Contract = "0x6ceba22ac458402cf9c1f055d51f0b901be2d32ded222c5607b0d316a758aaaf";
 
     // https://shibuya.subscan.io/extrinsic/3319796-6
 
@@ -184,14 +189,48 @@ final class ContractTest extends TestCase
     {
         $v4 = ContractMetadataV4::to_obj(json_decode(file_get_contents(__DIR__ . '/ink/ink_erc20.json'), true));
         $v4->register_type($this->wsClient->tx->codec->getGenerator(), "testErc20DeployContract");
+
+        // send submitAndWatchExtrinsic util extrinsic is in block
+        $this->wsClient->tx->withOpt(["subscribe" => true]);
         $contract = new Contract($this->wsClient->tx, "", $v4);
-        // deploy with constructor args
-        $result = $contract->new(Constant::$Erc20Code, [0]);
-        $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
+
+        // deploy with constructor args and waiting extrinsic exec success
+        $result = $contract->new(Constant::$Erc20Code, [100000000]);
+        $this->assertTrue(array_key_exists("inBlock", $result["params"]["result"]));
+        $this->wsClient->tx->withOpt(["subscribe" => false]);
         // constructor args count Mismatch will raise error
         $this->expectException(\InvalidArgumentException::class);
-        $contract->new(Constant::$flipperCode, [0, 1, 2, 3]);
+        $contract->new(Constant::$Erc20Code, [0, 1, 2, 3]);
     }
+
+
+    public function testErc20Contract ()
+    {
+        $v4 = ContractMetadataV4::to_obj(json_decode(file_get_contents(__DIR__ . '/ink/ink_erc20.json'), true));
+        $v4->register_type($this->wsClient->tx->codec->getGenerator(), "testErc20Contract");
+        // read contract
+        $contract = new Contract($this->wsClient->tx, $this->erc20Contract, $v4);
+        $this->wsClient->tx->withOpt(["subscribe" => true]);
+        // total_supply
+        $execResult = $contract->state->total_supply();
+        $result = ContractExecResult::deserialization($execResult->result);
+        $this->assertNotEmpty($result->result->Ok);
+        $this->assertEquals(["Ok" => gmp_init(100000000)], $result->decodeResult($this->wsClient->tx->codec, $execResult->type));
+
+        // balance_of
+        $execResult = $contract->state->balance_of($this->BobId);
+        $bobBalance = ContractExecResult::deserialization($execResult->result)->decodeResult($this->wsClient->tx->codec, $execResult->type)["Ok"];
+        $this->assertTrue(gmp_cmp($bobBalance, 0) == 1);// $aliceBalance must positive
+
+        // exec transfer
+        $contract->call->transfer($this->BobId, 100, []);
+
+        // after transfer
+        $execResult = $contract->state->balance_of($this->BobId);
+        $bobBalance2 = ContractExecResult::deserialization($execResult->result)->decodeResult($this->wsClient->tx->codec, $execResult->type)["Ok"];
+        $this->assertEquals(gmp_add($bobBalance, 100), $bobBalance2);
+    }
+
 
     /**
      * @throws \SodiumException

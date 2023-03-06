@@ -111,7 +111,7 @@ class Call
         $codec = $this->codec;
         $data = Util::trimHex($message["selector"]);
         foreach ($message["args"] as $index => $arg) {
-            $data = $data . $codec->createTypeByTypeString($this->ABI->getTypeNameBySiType($arg["type"]))->encode($attributes[$index]);
+            $data = $data . $codec->createTypeByTypeString($this->ABI->getTypeNameBySiType($arg["type"]["type"]))->encode($attributes[$index]);
         }
         $gasLimit = ContractExecResult::convertGasRequired($gasLimit);
         if (count($gasLimit) == 0) {
