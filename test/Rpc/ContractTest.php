@@ -49,6 +49,7 @@ final class ContractTest extends TestCase
         $endpoint = getenv("RPC_URL") == "" ? "wss://shibuya-rpc.dwellir.com" : getenv("RPC_URL");
         $this->wsClient = new SubstrateRpc($endpoint);
         $this->hasher = new Hasher();
+        $this->wsClient->tx->withOpt(["subscribe" => true]);
         $this->wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $this->hasher), $this->hasher);
     }
 
@@ -178,8 +179,11 @@ final class ContractTest extends TestCase
     public function testSampleDeployContract ()
     {
         $contract = new Contract($this->wsClient->tx);
+        $this->wsClient->tx->withOpt(["subscribe" => false]);
         $result = $contract->new(Constant::$flipperCode, "0x9bae9d5e01");
-        $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
+        $this->assertEquals(64, strlen(Util::trimHex($result->getContractAddress()))); // new contract accountID
+        $this->assertEquals(64, strlen(Util::trimHex($result->getTransactionHash()))); //  transaction hash
+        $this->wsClient->tx->withOpt(["subscribe" => true]);
         // input data not string will raise error
         $this->expectException(\InvalidArgumentException::class);
         $contract->new(Constant::$flipperCode, ["0x9bae9d5e01"]);
@@ -191,13 +195,10 @@ final class ContractTest extends TestCase
         $v4->register_type($this->wsClient->tx->codec->getGenerator(), "testErc20DeployContract");
 
         // send submitAndWatchExtrinsic util extrinsic is in block
-        $this->wsClient->tx->withOpt(["subscribe" => true]);
         $contract = new Contract($this->wsClient->tx, "", $v4);
-
         // deploy with constructor args and waiting extrinsic exec success
         $result = $contract->new(Constant::$Erc20Code, [100000000]);
-        $this->assertTrue(array_key_exists("inBlock", $result["params"]["result"]));
-        $this->wsClient->tx->withOpt(["subscribe" => false]);
+        $this->assertEquals(64, strlen(Util::trimHex($result->getInBlockHash()))); // deploy contract block hash
         // constructor args count Mismatch will raise error
         $this->expectException(\InvalidArgumentException::class);
         $contract->new(Constant::$Erc20Code, [0, 1, 2, 3]);
@@ -210,7 +211,6 @@ final class ContractTest extends TestCase
         $v4->register_type($this->wsClient->tx->codec->getGenerator(), "testErc20Contract");
         // read contract
         $contract = new Contract($this->wsClient->tx, $this->erc20Contract, $v4);
-        $this->wsClient->tx->withOpt(["subscribe" => true]);
         // total_supply
         $execResult = $contract->state->total_supply();
         $this->assertEquals(["Ok" => gmp_init(100000000)], ContractExecResult::getDecodeResult($execResult, $this->wsClient->tx->codec));
@@ -265,10 +265,23 @@ final class ContractTest extends TestCase
         $v4 = ContractMetadataV4::to_obj(json_decode(file_get_contents(__DIR__ . '/ink/ink_v4.json'), true));
         $v4->register_type($this->wsClient->tx->codec->getGenerator(), "testAbiMetadataV4Parse");
 
-        // read contract
+        // write contract
         $contract = new Contract($this->wsClient->tx, $this->flipperContract, $v4);
-        $result = $contract->call->flip([]);
-        $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
+
+        // origin result
+        $originResult = ContractExecResult::getDecodeResult($contract->state->get(), $this->wsClient->tx->codec);
+        $this->assertArrayHasKey("Ok", $originResult);
+
+        // do flip
+        $exec = $contract->call->flip([]);
+        $this->assertTrue(array_key_exists("inBlock", $exec["params"]["result"]));
+
+        // after flip result
+        $afterResult = ContractExecResult::getDecodeResult($contract->state->get(), $this->wsClient->tx->codec);
+        $this->assertArrayHasKey("Ok", $originResult);
+
+        $this->assertTrue((!$originResult["Ok"]) == $afterResult["Ok"]);
+
         // query state count Mismatch will raise error
         $this->expectException(\InvalidArgumentException::class);
         $contract->call->flip("xxx", "2222", []);

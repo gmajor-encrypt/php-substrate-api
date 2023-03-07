@@ -49,7 +49,7 @@ class Tx
      *
      * @var array
      */
-    protected array $options = [
+    public array $options = [
         "tip" => 0,
         "era" => "00",
         "subscribe" => false,

@@ -79,7 +79,7 @@ class ContractExecResult
      * @param ScaleInstance $codec
      * @return mixed
      */
-    public static function getDecodeResult (object $j, ScaleInstance $codec,): mixed
+    public static function getDecodeResult (object $j, ScaleInstance $codec): mixed
     {
         $result = self::deserialization($j->result);
         return $result->decodeResult($codec, $j->type);
