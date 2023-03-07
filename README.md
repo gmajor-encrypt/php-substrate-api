@@ -10,6 +10,8 @@ PHP Substrate RPC Api
 * json (https://www.php.net/manual/en/json.installation.php) 
 * sodium (https://www.php.net/manual/en/sodium.installation.php) 
 * gmp (https://www.php.net/manual/en/gmp.installation.php)
+* dom (https://www.php.net/manual/en/dom.installation.php)
+* mbstring (https://www.php.net/manual/en/mbstring.installation.php)
 
 
 ## Installation
