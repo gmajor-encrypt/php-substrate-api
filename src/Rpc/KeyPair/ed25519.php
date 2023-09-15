@@ -45,6 +45,7 @@ class ed25519 implements IKeyPair
      */
     public function sign (string $msg): string
     {
+        $msg = (substr($msg, 0, 2) == '0x') ? hex2bin(substr($msg, 2)) : $msg;
         return sodium_bin2hex(sodium_crypto_sign_detached($msg, sodium_hex2bin($this->sk)));
     }
 
