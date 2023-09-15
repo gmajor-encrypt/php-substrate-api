@@ -17,7 +17,7 @@
     "ext-sodium": "*",
     "gmajor/sr25519-bindings": "dev-main",
     "tuupola/base58": "2.x-dev",
-    "gmajor/substrate-codec-php": "dev-master",
+    "selaz/substrate-codec-php": "dev-master",
     "ext-gmp": "*",
     "netresearch/jsonmapper": "dev-master"
   },
