@@ -1,5 +1,5 @@
 {
-  "name": "selaz/php-substrate-api",
+  "name": "gmajor/php-substrate-api",
   "description": "PHP Substrate RPC Api",
   "keywords": [
     "substrate",
@@ -17,7 +17,7 @@
     "ext-sodium": "*",
     "gmajor/sr25519-bindings": "dev-main",
     "tuupola/base58": "2.x-dev",
-    "selaz/substrate-codec-php": "dev-master",
+    "gmajor/substrate-codec-php": "dev-master",
     "ext-gmp": "*",
     "netresearch/jsonmapper": "dev-master"
   },
