@@ -58,6 +58,14 @@ class ExtrinsicOption
      */
     public int $transactionVersion;
 
+    /**
+     * additional CheckMetadataHash
+     *
+     * @var bool
+     */
+    public bool $CheckMetadataHash = false;
+
+
     public function __construct (string $genesisHash)
     {
         $this->blockHash = $genesisHash;
