@@ -67,6 +67,13 @@ class ExtrinsicPayload
      */
     public int $transactionVersion;
 
+
+    /**
+     * @var bool $checkMetadataHash
+     */
+    public bool|null $checkMetadataHash = false;
+
+
     /**
      * Signed Extrinsic
      * {
@@ -82,7 +89,7 @@ class ExtrinsicPayload
      * @param ExtrinsicOption $opt
      * @param string $encodeCall
      */
-    public function __construct (ExtrinsicOption $opt, string $encodeCall)
+    public function __construct(ExtrinsicOption $opt, string $encodeCall)
     {
         $this->call = $encodeCall;
         $this->era = $opt->era;
@@ -92,6 +99,7 @@ class ExtrinsicPayload
         $this->genesisHash = $opt->genesisHash;
         $this->blockHash = $opt->blockHash;
         $this->transactionVersion = $opt->transactionVersion;
+        $this->checkMetadataHash = $opt->CheckMetadataHash;
     }
 
 
@@ -102,7 +110,7 @@ class ExtrinsicPayload
      * @param string $encodePayload
      * @return string
      */
-    public function sign (keyPair $keyPair, string $encodePayload): string
+    public function sign(keyPair $keyPair, string $encodePayload): string
     {
         return $keyPair->sign(Util::addHex($encodePayload));
     }
@@ -113,15 +121,22 @@ class ExtrinsicPayload
      * @param ScaleInstance $codec
      * @return string
      */
-    public function encode (ScaleInstance $codec): string
+    public function encode(ScaleInstance $codec): string
     {
         $value = $this->call; // call code
         $value = $value . $codec->createTypeByTypeString("EraExtrinsic")->encode($this->era);
         $value = $value . $codec->createTypeByTypeString("Compact<U32>")->encode($this->nonce);
         $value = $value . $codec->createTypeByTypeString("Compact<Balance>")->encode($this->tip);
+        if (!is_null($this->checkMetadataHash)) {
+            $value = $value . $codec->createTypeByTypeString("bool")->encode($this->checkMetadataHash);
+        }
         $value = $value . $codec->createTypeByTypeString("U32")->encode($this->specVersion);
         $value = $value . $codec->createTypeByTypeString("U32")->encode($this->transactionVersion);
         $value = $value . $codec->createTypeByTypeString("Hash")->encode($this->genesisHash);
-        return $value . $codec->createTypeByTypeString("Hash")->encode($this->blockHash);
+        $value = $value . $codec->createTypeByTypeString("Hash")->encode($this->blockHash);
+        if (!is_null($this->checkMetadataHash)) {
+            $value = $value . $codec->createTypeByTypeString("bool")->encode($this->checkMetadataHash);
+        }
+        return $value;
     }
 }

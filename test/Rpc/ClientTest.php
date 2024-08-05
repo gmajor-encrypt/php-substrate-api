@@ -110,7 +110,7 @@ final class ClientTest extends TestCase
         $endpoint = getenv("RPC_URL") == "" ? "wss://shibuya-rpc.dwellir.com" : getenv("RPC_URL");
         $wsClient = new SubstrateRpc($endpoint);
         $wsClient->setSigner(KeyPair::initKeyPair("sr25519", $this->AliceSeed, $this->hasher), $this->hasher);
-        $result = $wsClient->tx->Balances->transfer($this->BobId, 12345);
+        $result = $wsClient->tx->Balances->transfer_keep_alive($this->BobId, 12345);
         $this->assertEquals(64, strlen(Util::trimHex($result))); // transaction hash
         $wsClient->close();
     }

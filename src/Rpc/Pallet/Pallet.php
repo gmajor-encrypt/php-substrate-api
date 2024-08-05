@@ -51,7 +51,7 @@ class Pallet
      * @param KeyPair $keyPair
      * @param array $opt
      */
-    public function __construct (Rpc $rpc, string $pallet, keyPair $keyPair, array $opt = [])
+    public function __construct(Rpc $rpc, string $pallet, keyPair $keyPair, array $opt = [])
     {
         $this->rpc = $rpc;
         $this->pallet = $pallet;
@@ -66,7 +66,7 @@ class Pallet
      * @return array|string
      * @throws InvalidArgumentException|SodiumException
      */
-    public function __call (string $call, array $attributes)
+    public function __call(string $call, array $attributes)
     {
         $signature = $this->signAndBuildExtrinsic(["module_id" => $this->pallet, "call_name" => $call, "params" => $attributes]);
         return $this->submitAndWatchExtrinsic($signature);
@@ -81,7 +81,7 @@ class Pallet
      * @param string $signature
      * @return string|array
      */
-    public function submitAndWatchExtrinsic (string $signature): string|array
+    public function submitAndWatchExtrinsic(string $signature): string|array
     {
         if ($this->options["subscribe"]) {
             return $this->rpc->author->submitAndWatchExtrinsic($signature);
@@ -100,7 +100,7 @@ class Pallet
      * @return string
      * @throws SodiumException
      */
-    public function signAndBuildExtrinsic (array $call): string
+    public function signAndBuildExtrinsic(array $call): string
     {
         $encodeCall = $this->rpc->codec->createTypeByTypeString("Call")->setMetadata($this->rpc->metadata)->encode($call);
         $genesisHash = $this->rpc->chain->getBlockHash(0); // chain_getBlockHash
@@ -113,7 +113,21 @@ class Pallet
         $opt->specVersion = $runtimeVersion["specVersion"]; // spec version state_getRuntimeVersion
         $opt->tip = $this->options["tip"]; //
         $opt->transactionVersion = $runtimeVersion["transactionVersion"]; // TransactionVersion
+        $extrinsic = [
+            'version' => '84',
+            "account_id" => ["Id" => $this->keyPair->pk],
+            "era" => $opt->era,
+            "nonce" => $opt->nonce,
+            "tip" => $opt->tip,
+            'module_id' => $call["module_id"],
+            'call_name' => $call["call_name"],
+            'params' => $call["params"]
+        ];
 
+        if (in_array("CheckMetadataHash", array_column($this->rpc->metadata["extrinsic"]["signedExtensions"], "identifier"))) {
+            $opt->CheckMetadataHash = false;
+            $extrinsic["CheckMetadataHash"] = false;
+        }
         // sign ExtrinsicPayload
         $payload = new ExtrinsicPayload($opt, $encodeCall);
         $payload_encode = $payload->encode($this->rpc->codec);
@@ -122,17 +136,7 @@ class Pallet
         }
         $signature = $payload->sign($this->keyPair, $payload_encode);
         // extrinsic build
-        $extrinsic = [
-            'version' => '84',
-            "account_id" => ["Id" => $this->keyPair->pk],
-            "signature" => [$this->keyPair->type => $signature],
-            "era" => $opt->era,
-            "nonce" => $opt->nonce,
-            "tip" => $opt->tip,
-            'module_id' => $call["module_id"],
-            'call_name' => $call["call_name"],
-            'params' => $call["params"]
-        ];
+        $extrinsic["signature"] = [$this->keyPair->type => $signature];
         // extrinsic encode
         return Util::addHex($this->rpc->codec->createTypeByTypeString("Extrinsic")->setMetadata($this->rpc->metadata)->encode($extrinsic));
     }
