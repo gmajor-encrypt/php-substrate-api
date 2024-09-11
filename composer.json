@@ -11,14 +11,14 @@
   "minimum-stability": "dev",
   "require": {
     "php": ">=8.0",
-    "textalk/websocket": "dev-master",
     "ext-curl": "*",
+    "ext-gmp": "*",
     "ext-json": "*",
     "ext-sodium": "*",
-    "gmajor/sr25519-bindings": "dev-main",
+    "gmajor/sr25519-bindings": "*",
+    "gmajor/substrate-codec-php": "*",
+    "textalk/websocket": "dev-master",
     "tuupola/base58": "2.x-dev",
-    "gmajor/substrate-codec-php": "dev-master",
-    "ext-gmp": "*",
     "netresearch/jsonmapper": "dev-master"
   },
   "require-dev": {
