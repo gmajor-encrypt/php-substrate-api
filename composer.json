@@ -15,8 +15,8 @@
     "ext-gmp": "*",
     "ext-json": "*",
     "ext-sodium": "*",
-    "gmajor/sr25519-bindings": "*",
-    "gmajor/substrate-codec-php": "*",
+    "gmajor/sr25519-bindings": "v1.*",
+    "gmajor/substrate-codec-php": "v1.*",
     "textalk/websocket": "dev-master",
     "tuupola/base58": "2.x-dev",
     "netresearch/jsonmapper": "dev-master"
